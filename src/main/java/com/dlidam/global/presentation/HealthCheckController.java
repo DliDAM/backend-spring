@@ -1,5 +1,6 @@
 package com.dlidam.global.presentation;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,8 @@ public class HealthCheckController {
     @Value("${serverName}")
     private String serverName;
 
-
+    @Operation(summary = "헬스 체크",
+            description = "서버 이름, 서버 주소, 포트")
     @GetMapping("/hc")
     public ResponseEntity<?> healthCheck(){
         Map<String, String> responseData = new HashMap<>();
