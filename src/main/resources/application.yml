@@ -1,0 +1,74 @@
+spring:
+  profiles:
+    active: local
+    group:
+      local: local, common, secret
+      blue: blue, common, secret
+      green: green, common, secret
+
+server:
+  env: blue
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
+server:
+  port: 8080
+  serverAddress: localhost
+
+serverName: local_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: blue
+
+server:
+  port: 8080
+  serverAddress: 3.34.121.34
+
+serverName: blue_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: green
+
+server:
+  port: 8081
+  serverAddress: 3.34.121.34
+
+serverName: green_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
+
+#  jpa:
+#    hibernate:
+#      ddl-auto: create # ???? drop?? ?? data? ?? ? ? ??
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        show_sql: true   # sout ?? ??
+#        default_batch_fetch_size: 100
+#    defer-datasource-initialization: true
+#  sql:
+#    init:
+#      mode: always
+#
+#logging:
+#  level:
+#    org.hibernate.SQL: debug  # logger? ?? ??
+#    org.hibernate.type: trace
