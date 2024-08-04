@@ -1,11 +1,9 @@
 package com.dlidam.friend.domain;
 
-import com.dlidam.member.domain.Member;
+import com.dlidam.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -22,7 +20,7 @@ public class friendList {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private User member;
 
     private String friendId;
 
