@@ -53,9 +53,9 @@ public class AuthenticationService {
         final UserInformationDto userInformationDto = provider.findUserInformation(oauth2AccessToken);
         log.info("이미 가입한 회원인지 확인하고 사용자 정보(객체) 요청 로직");
         final LoginUserInformationDto loginUserInfo = findOrPersistUser(oauth2Type, userInformationDto);
-
+        log.info("디바이스 토큰 저장 로직");
         updateOrPersistDeviceToken(deviceToken, loginUserInfo.user());
-
+        log.info("리프레시, 액세스 토큰 생성 로직");
         return LoginInformationDto.of(convertTokenDto(loginUserInfo), loginUserInfo);
     }
 

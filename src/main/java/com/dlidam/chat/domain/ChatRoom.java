@@ -1,6 +1,6 @@
 package com.dlidam.chat.domain;
 
-import com.dlidam.global.common.entity.BaseEntity;
+import com.dlidam.global.common.entity.BaseTimeEntity;
 import com.dlidam.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,11 +14,10 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
-public class ChatRoom extends BaseEntity {
+public class ChatRoom extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "room_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,4 +27,8 @@ public class ChatRoom extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id")
     private User receiver;
+
+
+
+
 }

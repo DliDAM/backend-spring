@@ -1,7 +1,7 @@
 package com.dlidam.user.domain;
 
 import com.dlidam.authentication.infrastructure.oauth2.Oauth2Type;
-import com.dlidam.global.common.entity.BaseEntity;
+import com.dlidam.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @EqualsAndHashCode(of = "id", callSuper = false)    // id 필드만을 사용하여 객체의 동등성을 비교
 @ToString(of = {"id", "name", "deleted", "oauthInformation"})
 @Table(name = "users")
-public class User extends BaseEntity {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
