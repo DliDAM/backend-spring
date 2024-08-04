@@ -1,5 +1,6 @@
 package com.dlidam.global.common.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -12,11 +13,9 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-public abstract class BaseEntity {
-
-    @CreatedDate
-    private LocalDateTime createdAt;
+public class BaseTimeEntity extends BaseCreateTimeEntity{
 
     @LastModifiedDate
-    private LocalDateTime updatedAt;
+    @Column(nullable = false)
+    private LocalDateTime lastModifiedTime;
 }

@@ -1,5 +1,6 @@
 package com.dlidam.chat.domain;
 
+import com.dlidam.global.common.entity.BaseCreateTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Entity
-public class ChatMessage {
+public class ChatMessage extends BaseCreateTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -27,12 +28,8 @@ public class ChatMessage {
     private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
-
-//    @Column(nullable = false, updatable = false, insertable = false)
-//    @ColumnDefault(value = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-//    private LocalDateTime createdAt;
 
     // todo: 전송 여부, 읽음 여부
 }
