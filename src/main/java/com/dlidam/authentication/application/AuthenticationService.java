@@ -4,9 +4,12 @@ import com.dlidam.authentication.application.dto.LoginInformationDto;
 import com.dlidam.authentication.application.dto.LoginUserInformationDto;
 import com.dlidam.authentication.application.dto.TokenDto;
 import com.dlidam.authentication.domain.Oauth2UserInformationProviderComposite;
+import com.dlidam.authentication.domain.TokenDecoder;
 import com.dlidam.authentication.domain.TokenEncoder;
 import com.dlidam.authentication.domain.TokenType;
 import com.dlidam.authentication.domain.dto.UserInformationDto;
+import com.dlidam.authentication.domain.exception.InvalidTokenException;
+import com.dlidam.authentication.infrastructure.jwt.PrivateClaims;
 import com.dlidam.authentication.infrastructure.oauth2.OAuth2UserInformationProvider;
 import com.dlidam.authentication.infrastructure.oauth2.Oauth2Type;
 import com.dlidam.device.application.DeviceTokenService;
@@ -38,7 +41,7 @@ public class AuthenticationService {
 
     private final TokenEncoder tokenEncoder;
 
-//    private final TokenDecoder tokenDecoder;
+    private final TokenDecoder tokenDecoder;
 
 
     @Transactional
@@ -119,5 +122,31 @@ public class AuthenticationService {
         );
 
         return new TokenDto(accessToken, refreshToken);
+    }
+
+    public TokenDto refreshToken(final String refreshToken) {
+        final PrivateClaims privateClaims = tokenDecoder.decode(TokenType.REFRESH, refreshToken)
+                .orElseThrow(
+                        () -> new InvalidTokenException("유효한 토큰이 아닙니다.")
+                );
+
+        final String accessToken = tokenEncoder.encode(
+                LocalDateTime.now(),
+                TokenType.ACCESS,
+                Map.of(PRIVATE_CLAIMS_KEYS, privateClaims.userId())
+        );
+
+        final String newRefreshToken = tokenEncoder.encode(
+                LocalDateTime.now(),
+                TokenType.REFRESH,
+                Map.of(PRIVATE_CLAIMS_KEYS, privateClaims.userId())
+        );
+
+        return new TokenDto(accessToken, newRefreshToken);
+    }
+
+    public boolean validateToken(final String accessToken) {
+        return tokenDecoder.decode(TokenType.ACCESS, accessToken)
+                .isPresent();
     }
 }

@@ -12,6 +12,8 @@ public interface UserRepository {
 
     Optional<User> findByOauthId(final String oauthId);
 
+    boolean existsByIdAndDeletedIsTrue(final Long id);
+
     boolean existsByCustomIdEndingWith(final String id);
 
 }
