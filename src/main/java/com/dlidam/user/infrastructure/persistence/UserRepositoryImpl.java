@@ -19,7 +19,9 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> findById(final Long id) { return jpaUserRepository.findById(id); }
+    public Optional<User> findById(final Long id) {
+        return jpaUserRepository.findById(id);
+    }
 
     @Override
     public Optional<User> findByOauthId(final String oauthId) {
@@ -27,7 +29,9 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsByIdAndDeletedIsTrue(final Long id) { return jpaUserRepository.existsByIdAndDeletedIsTrue(id); }
+    public boolean existsByIdAndDeletedIsTrue(final Long id) {
+        return jpaUserRepository.existsByIdAndDeletedIsTrue(id);
+    }
 
     @Override
     public boolean existsByCustomIdEndingWith(final String id) {

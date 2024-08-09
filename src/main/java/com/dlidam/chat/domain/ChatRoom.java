@@ -28,7 +28,4 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
-
-
-
 }
