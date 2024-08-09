@@ -84,7 +84,8 @@ public class AuthenticationService {
                             .oauth2Type(oauth2Type)
                             .build();
 
-                    isSignUpUser.set(true);
+//                    isSignUpUser.set(true);
+                    // todo: 회원가입 추가 기입 시 true로 바꿔 주기
                     return userRepository.save(user);
                 });
 
