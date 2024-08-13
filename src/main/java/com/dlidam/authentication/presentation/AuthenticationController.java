@@ -60,8 +60,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(new ValidatedTokenResponse(validated));
     }
 
-    @Operation(summary = "로그아웃",
-            description = "")
+    @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @RequestHeader(HttpHeaders.AUTHORIZATION) final String accessToken,
