@@ -42,4 +42,7 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean existsByCustomId(final String customId) {
         return jpaUserRepository.existsByCustomId(customId);
     }
+
+    @Override
+    public Optional<User> findByCustomId(final String customId) { return jpaUserRepository.findByCustomId(customId); }
 }
