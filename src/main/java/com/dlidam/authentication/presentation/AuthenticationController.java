@@ -14,6 +14,7 @@ import com.dlidam.authentication.presentation.dto.response.ValidatedTokenRespons
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/oauth2")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
@@ -33,6 +35,7 @@ public class AuthenticationController {
             @PathVariable final Oauth2Type oauth2Type,
             @RequestBody final LoginTokenRequest request
     ){
+        log.info("로그인 요청이 들어왔습니다.");
         final LoginInformationDto loginInformationDto =
                 authenticationService.login(
                         oauth2Type,
@@ -45,6 +48,7 @@ public class AuthenticationController {
     @Operation(summary = "토큰 재발급")
     @PostMapping("/refresh-token")
     public ResponseEntity<TokenResponse> refreshToken(@RequestBody final RefreshTokenRequest request){
+        log.info("토큰 재발급 요청이 들어왔습니다.");
         final TokenDto tokenDto = authenticationService.refreshToken(request.refreshToken());
 
         return ResponseEntity.ok(TokenResponse.from(tokenDto));
@@ -55,6 +59,7 @@ public class AuthenticationController {
     public ResponseEntity<ValidatedTokenResponse> validateToken(
             @RequestHeader(HttpHeaders.AUTHORIZATION) final String accessToken
     ){
+        log.info("엑세스 토큰 유효성 검증 요청이 들어왔습니다.");
         final boolean validated = authenticationService.validateToken(accessToken);
 
         return ResponseEntity.ok(new ValidatedTokenResponse(validated));
@@ -66,6 +71,7 @@ public class AuthenticationController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) final String accessToken,
             @RequestBody @Valid final LogoutRequest request
     ) {
+        log.info("로그아웃 요청이 들어왔습니다.");
         blackListTokenService.registerBlackListToken(accessToken, request.refreshToken());
 
         return ResponseEntity.noContent().build();

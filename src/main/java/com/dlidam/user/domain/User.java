@@ -34,10 +34,8 @@ public class User extends BaseTimeEntity {
     @Enumerated(value = STRING)
     private VoiceType voiceType;
 
-    // todo: 프로필 사진
-
     @Column(length = 50)
-    private String statusMessage;
+    private String statusMessage;   // 한 줄 소개
 
     @Embedded
     private OauthInformation oauthInformation;
