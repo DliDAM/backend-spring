@@ -24,17 +24,15 @@ public class User extends BaseTimeEntity {
     @Column(length = 20, unique = true)
     private String customId;      // 중복 불가능한 사용자 ID
 
+    @Column(length = 10)
     private String name;
 
-    private boolean idDisabled;
+    private boolean isDisabled;
 
     private String phoneNumber;
 
     @Enumerated(value = STRING)
     private VoiceType voiceType;
-
-    @Enumerated(value = STRING)
-    private CallType callType;
 
     // todo: 프로필 사진
 
@@ -57,8 +55,17 @@ public class User extends BaseTimeEntity {
         this.oauthInformation = new OauthInformation(oauthId, oauth2Type);
     }
 
-    public void updateCustomId(final String customId){ this.customId = customId; }
-
-    public void updateName(final String name){ this.name = name; }
+    public void createInfo(
+            final String customId,
+            final String name,
+            final String phoneNumber,
+            final Boolean isDisabled,
+            final VoiceType voiceType) {
+        this.customId = customId;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.isDisabled = isDisabled;
+        this.voiceType = voiceType;
+    }
 
 }
