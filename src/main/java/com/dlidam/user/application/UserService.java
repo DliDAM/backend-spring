@@ -38,7 +38,7 @@ public class UserService {
 
     public CustomIdIsAvailableDto validateByCustomId(final CustomIdDto customIdDto) {
 
-        boolean isAvailable = userRepository.existsByCustomId(customIdDto.customId());
+        boolean isAvailable = !userRepository.existsByCustomId(customIdDto.customId());
 
         return CustomIdIsAvailableDto.from(isAvailable);
     }
