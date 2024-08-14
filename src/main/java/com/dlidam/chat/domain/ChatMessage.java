@@ -3,12 +3,9 @@ package com.dlidam.chat.domain;
 import com.dlidam.global.common.entity.BaseCreateTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-
-import java.time.LocalDateTime;
-import java.util.Date;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -17,11 +14,14 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Entity
+@Builder
 public class ChatMessage extends BaseCreateTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
+    private Long userId;
 
     private String sender;
 

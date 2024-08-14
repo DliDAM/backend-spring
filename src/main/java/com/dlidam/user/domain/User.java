@@ -5,7 +5,7 @@ import com.dlidam.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static jakarta.persistence.EnumType.*;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 

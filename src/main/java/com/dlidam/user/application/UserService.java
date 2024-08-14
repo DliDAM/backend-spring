@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,5 +40,10 @@ public class UserService {
         boolean isAvailable = !userRepository.existsByCustomId(customIdDto.customId());
 
         return CustomIdIsAvailableDto.from(isAvailable);
+    }
+
+    @Transactional
+    public User findUSerById(Long userId){
+        return userRepository.findById(userId).orElseThrow();
     }
 }
