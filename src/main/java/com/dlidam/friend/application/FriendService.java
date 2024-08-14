@@ -2,17 +2,22 @@ package com.dlidam.friend.application;
 
 import com.dlidam.friend.application.dto.AddFriendDto;
 import com.dlidam.friend.application.dto.FriendDto;
+import com.dlidam.friend.application.dto.UserDto;
 import com.dlidam.friend.application.exception.AlreadyFriendException;
 import com.dlidam.friend.application.exception.FriendNotFoundException;
 import com.dlidam.friend.application.exception.MemberNotFoundException;
 import com.dlidam.friend.domain.FriendList;
 import com.dlidam.friend.domain.repository.FriendListRepository;
-import com.dlidam.friend.presentation.dto.request.FriendSearchCondition;
+import com.dlidam.friend.presentation.dto.request.UserSearchCondition;
 import com.dlidam.user.domain.User;
 import com.dlidam.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,11 +27,11 @@ public class FriendService {
     private final UserRepository userRepository;
     private final FriendListRepository friendListRepository;
 
-    public FriendDto getFriend(final FriendSearchCondition friendSearchCondition) {
-        final User friend = userRepository.findByCustomId(friendSearchCondition.customId())
+    public UserDto getFriend(final UserSearchCondition userSearchCondition) {
+        final User friend = userRepository.findByCustomId(userSearchCondition.customId())
                 .orElseThrow(() -> new FriendNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
 
-        return FriendDto.of(friend);
+        return UserDto.of(friend);
     }
 
     @Transactional
@@ -46,5 +51,19 @@ public class FriendService {
                 .build();
 
         friendListRepository.save(newFriend);
+    }
+
+    public List<FriendDto> getFriends(final Long userId) {
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberNotFoundException("지정한 사용자를 찾을 수 없습니다."));
+        final List<FriendList> friendLists = friendListRepository.findAllByUser(user);
+
+        return friendLists.stream()
+                .map(friendList -> {
+                    final User friend = userRepository.findByCustomId(friendList.getFriendId())
+                            .orElseThrow(() -> new FriendNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
+                    return FriendDto.from(friendList, friend);
+                })
+                .collect(Collectors.toList());
     }
 }
