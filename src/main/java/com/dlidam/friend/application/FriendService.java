@@ -8,14 +8,13 @@ import com.dlidam.friend.application.exception.FriendNotFoundException;
 import com.dlidam.friend.application.exception.MemberNotFoundException;
 import com.dlidam.friend.domain.FriendList;
 import com.dlidam.friend.domain.repository.FriendListRepository;
-import com.dlidam.friend.presentation.dto.request.UserSearchCondition;
+import com.dlidam.friend.presentation.dto.request.UserSearchRequest;
 import com.dlidam.user.domain.User;
 import com.dlidam.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +26,8 @@ public class FriendService {
     private final UserRepository userRepository;
     private final FriendListRepository friendListRepository;
 
-    public UserDto getFriend(final UserSearchCondition userSearchCondition) {
-        final User friend = userRepository.findByCustomId(userSearchCondition.customId())
+    public UserDto getFriend(final UserSearchRequest userSearchRequest) {
+        final User friend = userRepository.findByCustomId(userSearchRequest.customId())
                 .orElseThrow(() -> new FriendNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
 
         return UserDto.of(friend);
