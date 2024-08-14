@@ -19,4 +19,8 @@ public interface JpaUserRepository extends JpaRepository<User, Long> {
     boolean existsByCustomIdEndingWith(final String id);
 
     boolean existsByIdAndDeletedIsTrue(final Long id);
+
+    boolean existsByCustomId(final String customId);
+
+    Optional<User> findByCustomId(final String customId);
 }

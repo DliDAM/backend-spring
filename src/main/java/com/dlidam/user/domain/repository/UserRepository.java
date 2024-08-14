@@ -16,4 +16,7 @@ public interface UserRepository {
 
     boolean existsByCustomIdEndingWith(final String id);
 
+    boolean existsByCustomId(final String customId);
+
+    Optional<User> findByCustomId(final String customId);
 }
