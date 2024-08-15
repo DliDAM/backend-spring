@@ -11,12 +11,14 @@ import com.dlidam.authentication.infrastructure.jwt.PrivateClaims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
     private final BlackListTokenService blackListTokenService;
@@ -35,6 +37,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             final Object handler) throws Exception
     {
         final String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        log.info("액세스 토큰 = {} 디코드 하는 중 입니다.", accessToken);
 
         // 토큰이 없거나 비어있는 경우
         if(isNotRequiredAuthentication(accessToken)){
@@ -53,6 +56,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         store.set(new AuthenticationUserInfo(privateClaims.userId()));
+        log.info("액세스 토큰 디코드가 완료되었습니다. 사용자 ID = {}", privateClaims.userId());
+
         return true;
     }
 
