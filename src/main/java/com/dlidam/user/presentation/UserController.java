@@ -44,7 +44,7 @@ public class UserController {
     ){
 //        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
         log.info("userId = {}의 사용자 아이디 중복 조회 요청이 들어왔습니다.", userInfo.userId());
-        log.info("customId 요청 = {}", customIdRequest.customId());
+        log.info("customId 요청 확인 = {}", customIdRequest.customId());
         final CustomIdIsAvailableDto customIdIsAvailableDto = userService.validateByCustomId(CustomIdDto.of(customIdRequest));
         final CustomIdIsAvailableResponse response = CustomIdIsAvailableResponse.from(customIdIsAvailableDto);
 
