@@ -84,11 +84,12 @@ public class AuthenticationService {
                             .oauth2Type(oauth2Type)
                             .build();
 
-                    if(user.getCustomId() != null) {
-                        isSignUpUser.set(true);
-                    }
                     return userRepository.save(user);
                 });
+
+        if(signInUser.getCustomId() != null){
+            isSignUpUser.set(true);
+        }
 
         return new LoginUserInformationDto(signInUser, isSignUpUser.get());
     }
