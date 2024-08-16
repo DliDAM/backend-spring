@@ -16,5 +16,8 @@ public class ConfigUtil {
 
     @Value("${socket.io.host}")
     private String host;
+
+    @Value("${socket.fast-api-endpoint}")
+    private String fastApiEndpoint;
 }
 
