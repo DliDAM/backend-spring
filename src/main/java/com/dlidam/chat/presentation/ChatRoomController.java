@@ -47,7 +47,7 @@ public class ChatRoomController {
             @AuthenticateUser final  AuthenticationUserInfo userInfo,
             @RequestBody @ Valid CreateChatRoomRequestDTO request
     ){
-        ChatRoom chatRoom = chatRoomService.findChatRoomBySenderIdAndReceiverId(userInfo.userId(), request.getReceiverId());
+        ChatRoom chatRoom = chatRoomService.findChatRoomBySenderIdAndReceiverId(request.getReceiverId(),userInfo.userId());
 
         if(chatRoom.getUser2Connect() == false){
             chatRoom.setUser2ConnectTrue();

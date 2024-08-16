@@ -18,12 +18,14 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
-
+    public final ChatRoomService chatRoomService;
     public final ChatMessageRepository chatMessageRepository;
-    public ChatMessage save(Long userId, ChatMessageRequestDTO request, ChatRoom chatRoom) {
+
+    public ChatMessage save( ChatMessageRequestDTO request) {
+          ChatRoom chatRoom = chatRoomService.findById(request.getChatRoomId());
           ChatMessage chatMessage = ChatMessage.builder()
                 .message(request.getMessage())
-                .userId(userId)
+                .userId(request.getUserId())
                 .chatRoom(chatRoom)
                 .build();
           chatMessageRepository.save(chatMessage);
