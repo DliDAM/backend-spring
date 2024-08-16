@@ -30,7 +30,7 @@ public class UserController {
             @AuthenticateUser final AuthenticationUserInfo userInfo,
             @RequestBody @Valid final CreateUserRequest createRequest
     ){
-//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(6L);
+//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(3L);
         log.info("userId = {}의 회원 정보 추가 기입 요청이 들어왔습니다.", userInfo.userId());
         userService.createInfo(CreateUserDto.of(userInfo.userId(), createRequest));
         return ResponseEntity.noContent().build();
@@ -42,8 +42,9 @@ public class UserController {
             @AuthenticateUser final AuthenticationUserInfo userInfo,
             @RequestBody @Valid final CustomIdRequest customIdRequest
     ){
-//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
+//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(3L);
         log.info("userId = {}의 사용자 아이디 중복 조회 요청이 들어왔습니다.", userInfo.userId());
+        log.info("customId 요청 확인 = {}", customIdRequest.customId());
         final CustomIdIsAvailableDto customIdIsAvailableDto = userService.validateByCustomId(CustomIdDto.of(customIdRequest));
         final CustomIdIsAvailableResponse response = CustomIdIsAvailableResponse.from(customIdIsAvailableDto);
 
