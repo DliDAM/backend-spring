@@ -9,6 +9,7 @@ import com.dlidam.chat.domain.repository.ChatRoomRepository;
 import com.dlidam.chat.dto.response.ChatMessageDTO;
 import com.dlidam.chat.dto.response.ChatRoomResponseDTO;
 import com.dlidam.chat.dto.response.ChatRoomWithLastMessageResponseDTO;
+import com.dlidam.user.application.UserService;
 import com.dlidam.user.application.exception.UserNotFoundException;
 import com.dlidam.user.domain.User;
 import com.dlidam.user.domain.repository.UserRepository;
@@ -112,5 +113,19 @@ public class ChatRoomService {
     public ChatRoom findById(final Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new ChatRoomNotFoundException("요청하는 ID에 해당하는 채팅방을 찾을 수 없습니다."));
+    }
+
+    public ChatRoomResponseDTO getChatMessages(Long chatRoomId, Long userId) {
+
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
+
+        ChatRoom chatRoom = findById(chatRoomId);
+        if (chatRoom.getSender().equals(user)){
+            return getSenderMessages(chatRoom);
+        } else if (chatRoom.getReceiver().equals(user)) {
+            return getReceiverMessages(chatRoom);
+        }
+        throw new ChatRoomNotFoundException("해당 채팅방의 내역을 불러올 수 없습니다.");
     }
 }
