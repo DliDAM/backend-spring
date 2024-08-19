@@ -68,7 +68,18 @@ public class ChatRoomController {
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
-    // todo: 사용자 채팅방 채팅 내역 조회 API ( GET: /chat/{chatRoomId} )
+    @GetMapping("/{chatRoomId}")
+    @Operation(summary = "사용자 채팅방 채팅 내역 조회 API")
+    public ResponseEntity<ChatRoomResponseDTO> getChatMessages(
+            @AuthenticateUser final AuthenticationUserInfo userInfo,
+            @PathVariable("chatRoomId") final Long chatRoomId
+    ){
+//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(2L);
+        log.info("userId = {}의 채팅방의 채팅 내역 조회 요청이 들어왔습니다.", userInfo.userId());
+        final ChatRoomResponseDTO response = chatRoomService.getChatMessages(chatRoomId,userInfo.userId());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
 //    @GetMapping("/user/chatrooms")
 //    @Operation(summary = "유저의 채팅방 목록 보여주기", description = "유저의 채팅리스트 보여주기 api")

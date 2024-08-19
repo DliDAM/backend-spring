@@ -72,6 +72,11 @@ public class WebsocketProxy {
     private ConnectListener onConnected() {
         return client -> {
             log.info("[WebRTCProxy]-[Socketio]-[{}] Connected to WebRTCProxy Socketio", client.getSessionId().toString());
+
+            // 클라이언트가 연결 시에 데이터베이스의 채팅방 ID로 WebSocket 룸에 참가
+            String chatRoomId = client.getHandshakeData().getSingleUrlParam("chatRoomId");
+            client.joinRoom(chatRoomId);
+
             timer = new Timer();
             connectFastAPI(timer, client);
         };
