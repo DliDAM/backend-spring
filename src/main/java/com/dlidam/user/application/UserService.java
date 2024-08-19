@@ -42,8 +42,8 @@ public class UserService {
         return CustomIdIsAvailableDto.from(isAvailable);
     }
 
-    @Transactional
-    public User findUSerById(Long userId){
-        return userRepository.findById(userId).orElseThrow();
+    public User findUserByCustomId(final String senderId) {
+        return userRepository.findByCustomId(senderId)
+                .orElseThrow();
     }
 }

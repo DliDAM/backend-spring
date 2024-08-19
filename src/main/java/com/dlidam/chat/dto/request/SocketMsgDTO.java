@@ -1,4 +1,4 @@
-package com.dlidam.chat.presentation.dto.request;
+package com.dlidam.chat.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

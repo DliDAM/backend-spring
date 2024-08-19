@@ -1,4 +1,4 @@
-package com.dlidam.chat.presentation.dto.request;
+package com.dlidam.chat.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateChatRoomRequestDTO {
-    private Long receiverId;
-    private Long userId;
+
+    private String friendId;
+
 }
