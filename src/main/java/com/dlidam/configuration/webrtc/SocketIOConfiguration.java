@@ -1,4 +1,4 @@
-package com.dlidam.configuration.socketio;
+package com.dlidam.configuration.webrtc;
 
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.Transport;

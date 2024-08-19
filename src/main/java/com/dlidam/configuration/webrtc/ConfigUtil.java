@@ -1,4 +1,4 @@
-package com.dlidam.configuration.socketio;
+package com.dlidam.configuration.webrtc;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

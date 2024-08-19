@@ -34,26 +34,26 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
-    private String lastChatMessage;
+    private Boolean senderConnect = false;
 
-    private Boolean user1Connect = false;
-
-    private Boolean user2Connect = false;
+    private Boolean receiverConnect = false;
 
     public ChatRoom(User sender, User receiver){
         this.sender = sender;
         this.receiver = receiver;
     }
 
-    public void setLastChatMessage(String lastChatMessage){this.lastChatMessage = lastChatMessage;}
 
-    public void setUser1ConnectTrue(){
-        this.user1Connect = true;
+    public void setSenderConnectTrue(){ this.senderConnect = true; }
+
+    public void setReceiverConnectTrue(){
+        this.receiverConnect = true;
     }
 
-    public void setUser2ConnectTrue(){
-        this.user2Connect = true;
-    }
 
+    public User calculateChatPartnerOf(final User user) {
+        if(sender.equals(user)) return receiver;
+        return sender;
+    }
 
 }

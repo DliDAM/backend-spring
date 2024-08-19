@@ -1,4 +1,4 @@
-package com.dlidam.chat.presentation.dto.response;
+package com.dlidam.chat.dto.response;
 
 import com.dlidam.chat.domain.ChatMessage;
 import lombok.Builder;
@@ -11,13 +11,14 @@ import java.util.stream.Collectors;
 @Builder
 @Getter
 public class ChatMessageDTO {
-        private Long userId;
+
+        private String senderName;    // 보내는 사람 이름
         private String message;
         private LocalDateTime createdAt;
 
         public static ChatMessageDTO toChatMessageDTO(ChatMessage chatMessage){
                 return ChatMessageDTO.builder()
-                        .userId(chatMessage.getUserId())
+                        .senderName(chatMessage.getSenderName())
                         .message(chatMessage.getMessage())
                         .createdAt(chatMessage.getCreatedTime())
                         .build();

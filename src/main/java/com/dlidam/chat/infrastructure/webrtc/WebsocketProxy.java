@@ -1,4 +1,4 @@
-package com.dlidam.configuration.socketio;
+package com.dlidam.chat.infrastructure.webrtc;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIONamespace;
@@ -7,7 +7,9 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.dlidam.chat.application.ChatMessageService;
-import com.dlidam.chat.presentation.dto.request.ChatMessageRequestDTO;
+import com.dlidam.chat.dto.request.ChatMessageRequestDTO;
+import com.dlidam.configuration.webrtc.ConfigUtil;
+import com.dlidam.configuration.webrtc.WebSocketUtil;
 import com.dlidam.user.application.UserService;
 import com.dlidam.user.domain.User;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,8 @@ public class WebsocketProxy {
         this.chatMessageService = chatMessageService;
         this.userService = userService;
     }
+
+    // 경로: "/websocket", 이벤트: "textMessage"
 
     // WebSocket 연결 설정
     private void connectFastAPI(Timer timer, SocketIOClient client){
@@ -97,8 +101,8 @@ public class WebsocketProxy {
         return (client, chatMessageRequestDTO, ackSender) -> {
             try {
                 chatMessageService.save(chatMessageRequestDTO);
-                User user = userService.findUSerById(chatMessageRequestDTO.getUserId());
-                if(user.isDisabled() == false){
+                User sender = userService.findUserByCustomId(chatMessageRequestDTO.getSenderId());
+                if(!sender.isDisabled()){
                     namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                             .sendEvent("messageData", chatMessageRequestDTO);
                 }

@@ -21,9 +21,9 @@ public class ChatMessage extends BaseCreateTimeEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    private Long userId;
+    private String senderId;    // 보내는 사람
 
-    private String sender;
+    private String senderName;
 
     private String message;
 
@@ -32,4 +32,15 @@ public class ChatMessage extends BaseCreateTimeEntity {
     private ChatRoom chatRoom;
 
     // todo: 전송 여부, 읽음 여부
+
+    public ChatMessage(
+            final String senderId,
+            final String senderName,
+            final String message,
+            final ChatRoom chatRoom){
+        this.senderId = senderId;
+        this.senderName = senderName;
+        this.message = message;
+        this.chatRoom = chatRoom;
+    }
 }
