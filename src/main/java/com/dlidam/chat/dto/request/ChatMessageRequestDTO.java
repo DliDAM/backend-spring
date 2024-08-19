@@ -1,4 +1,4 @@
-package com.dlidam.chat.presentation.dto.request;
+package com.dlidam.chat.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class ChatMessageRequestDTO {
 
     private Long chatRoomId;
-    private Long userId;
-    private String sender;
+    private String senderId;    // 보낸 사람 아이디
+    private String senderName;  // 보낸 사람 이름
     private String message;
 
 }

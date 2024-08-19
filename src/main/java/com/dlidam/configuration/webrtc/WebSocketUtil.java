@@ -1,4 +1,4 @@
-package com.dlidam.configuration.socketio;
+package com.dlidam.configuration.webrtc;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import lombok.extern.slf4j.Slf4j;
