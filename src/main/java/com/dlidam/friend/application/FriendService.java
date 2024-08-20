@@ -1,14 +1,11 @@
 package com.dlidam.friend.application;
 
-import com.dlidam.friend.application.dto.AddFriendDto;
-import com.dlidam.friend.application.dto.FriendDto;
-import com.dlidam.friend.application.dto.UserDto;
-import com.dlidam.friend.application.exception.AlreadyFriendException;
+import com.dlidam.friend.application.dto.*;
 import com.dlidam.friend.application.exception.FriendNotFoundException;
 import com.dlidam.friend.application.exception.MemberNotFoundException;
 import com.dlidam.friend.domain.FriendList;
 import com.dlidam.friend.domain.repository.FriendListRepository;
-import com.dlidam.friend.presentation.dto.request.UserSearchRequest;
+import com.dlidam.friend.presentation.dto.request.FriendIdRequest;
 import com.dlidam.user.domain.User;
 import com.dlidam.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,22 +23,24 @@ public class FriendService {
     private final UserRepository userRepository;
     private final FriendListRepository friendListRepository;
 
-    public UserDto getFriend(final UserSearchRequest userSearchRequest) {
-        final User friend = userRepository.findByCustomId(userSearchRequest.customId())
+    public UserDto getFriend(final FriendOperationDto friendDto) {
+        final User friend = userRepository.findByCustomId(friendDto.customId())
                 .orElseThrow(() -> new FriendNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
 
-        return UserDto.of(friend);
+        final Boolean isFriend = friendListRepository.existsByUserIdAndFriendId(friendDto.userId(), friendDto.customId());
+
+        return UserDto.of(friend, isFriend);
     }
 
     @Transactional
-    public void addFriend(final AddFriendDto friendDto) {
+    public AddSuccessDto addFriend(final FriendOperationDto friendDto) {
         final User user = userRepository.findById(friendDto.userId())
                 .orElseThrow(() -> new MemberNotFoundException("지정한 사용자를 찾을 수 없습니다."));
         final User friend = userRepository.findByCustomId(friendDto.customId())
                 .orElseThrow(() -> new FriendNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
         final Boolean isExist = friendListRepository.existsByUserIdAndFriendId(friendDto.userId(), friendDto.customId());
         if(isExist){
-            throw new AlreadyFriendException("이미 친구인 사용자 입니다.");
+            return AddSuccessDto.of(false);
         }
 
         final FriendList newFriend = FriendList.builder()
@@ -50,6 +49,8 @@ public class FriendService {
                 .build();
 
         friendListRepository.save(newFriend);
+
+        return AddSuccessDto.of(true);
     }
 
     public List<FriendDto> getFriends(final Long userId) {
@@ -64,5 +65,16 @@ public class FriendService {
                     return FriendDto.from(friendList, friend);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteFriend(final FriendOperationDto friendDto) {
+        if(!userRepository.existsById(friendDto.userId())){
+            throw new MemberNotFoundException("지정한 사용자를 찾을 수 없습니다.");
+        }
+        if(!userRepository.existsByCustomId(friendDto.customId())){
+            throw new FriendNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다.");
+        }
+        friendListRepository.deleteByUserIdAndFriendId(friendDto.userId(), friendDto.customId());
     }
 }

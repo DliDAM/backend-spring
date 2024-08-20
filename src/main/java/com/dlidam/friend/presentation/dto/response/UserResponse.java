@@ -5,13 +5,15 @@ import com.dlidam.friend.application.dto.UserDto;
 public record UserResponse(
         String customId,
         String name,
-        String statusMessage
+        String statusMessage,
+        boolean isFriend
 ) {
-    public static UserResponse from(UserDto dto) {
+    public static UserResponse from(final UserDto dto) {
         return new UserResponse(
                 dto.customId(),
                 dto.name(),
-                dto.statusMessage()
+                dto.statusMessage(),
+                dto.isFriend()
         );
     }
 }
