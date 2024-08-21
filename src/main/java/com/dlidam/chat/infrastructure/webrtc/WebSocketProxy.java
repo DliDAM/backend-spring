@@ -12,6 +12,7 @@ import com.dlidam.configuration.webrtc.ConfigUtil;
 import com.dlidam.configuration.webrtc.WebSocketUtil;
 import com.dlidam.user.application.UserService;
 import com.dlidam.user.domain.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.drafts.Draft_6455;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,28 +25,33 @@ import java.util.TimerTask;
 
 @Slf4j
 @Component
-public class WebsocketProxy {
+public class WebSocketProxy {
 
     private final String fastApiEndpoint;
     private final SocketIONamespace namespace;
     private WebSocketUtil fastAPIWebSocket;
     private Timer timer;
+
     private final ChatMessageService chatMessageService;
     private final UserService userService;
 
     @Autowired
-    public WebsocketProxy(SocketIOServer server, ConfigUtil configUtil, ChatMessageService chatMessageService,
+    public WebSocketProxy(SocketIOServer server, ConfigUtil configUtil, ChatMessageService chatMessageService,
                           UserService userService) {
         this.fastApiEndpoint = configUtil.getFastApiEndpoint();
-        this.namespace = server.addNamespace("/websocket"); // 경로: "/websocket"
+        // WebSocket을 연곃을 위한 네임스페이스
+        this.namespace = server.addNamespace("/websocket");
+        // 클라이언트가 연결될 때 호출
         this.namespace.addConnectListener(onConnected());
+        // 클라이언트가 연결을 종료할 때 호출
         this.namespace.addDisconnectListener(onDisconnected());
-        this.namespace.addEventListener("textMessage", ChatMessageRequestDTO.class, textMessageListener());     // 이벤트: "textMessage"
+        // "textMessage" 이벤트를 청취하고 메시지가 수신되면 textMessageListener 호출
+        this.namespace.addEventListener("textMessage", String.class, textMessageListener());
         this.chatMessageService = chatMessageService;
         this.userService = userService;
     }
 
-    // WebSocket 연결 설정
+    // FastAPI 서버와 WebSocket 연결 설정
     private void connectFastAPI(Timer timer, SocketIOClient client){
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -73,10 +79,15 @@ public class WebsocketProxy {
 
             // 클라이언트가 연결 시에 데이터베이스의 채팅방 ID로 WebSocket 룸에 참가
             String chatRoomId = client.getHandshakeData().getSingleUrlParam("chatRoomId");
+            if(chatRoomId == null) {
+                log.error("chatRoomId is null. Cannot join the room.");
+                return;
+            }
+            log.info("String chatRoomId: {}", chatRoomId);
             client.joinRoom(chatRoomId);
 
             timer = new Timer();
-            connectFastAPI(timer, client);
+//            connectFastAPI(timer, client);
         };
     }
 
@@ -95,31 +106,37 @@ public class WebsocketProxy {
     }
 
     // 클라이언트로부터 문자열 메시지 수신 시 처리
-    private DataListener<ChatMessageRequestDTO> textMessageListener() {
-        return (client, chatMessageRequestDTO, ackSender) -> {
+    private DataListener<String> textMessageListener() {
+        return (client, messagePayload, ackSender) -> {
             try {
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                ChatMessageRequestDTO chatMessageRequestDTO = objectMapper.readValue(messagePayload, ChatMessageRequestDTO.class);
+
+                log.info("========1=========");
                 chatMessageService.save(chatMessageRequestDTO);
+                log.info("========2=========");
                 User sender = userService.findUserByCustomId(chatMessageRequestDTO.getSenderId());
-                if(!sender.isDisabled()){
+                if(!sender.isDisabled()){   // 비장애인 사용자
                     namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                             .sendEvent("messageData", chatMessageRequestDTO);
                 }
-                else {
-                    if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
-                        // FastAPI 서버에 문자열 메시지 전송
-                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
-
-                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
-                        fastAPIWebSocket.onMessageCallback = audioData -> {
-                            // 클라이언트로 오디오 데이터 전송
-                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
-                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
-                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
-                        };
-                    } else {
-                        log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
-                    }
-                }
+//                else {      // 청각 장애인 사용자
+//                    if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
+//                        // FastAPI 서버에 문자열 메시지 전송
+//                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
+//
+//                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
+//                        fastAPIWebSocket.onMessageCallback = audioData -> {
+//                            // 클라이언트로 오디오 데이터 전송
+//                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
+//                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
+//                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
+//                        };
+//                    } else {
+//                        log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
+//                    }
+//                }
             } catch (Exception ex) {
                 log.error("[WebRTCProxy]-[Socketio] Exception while processing text message", ex);
             }

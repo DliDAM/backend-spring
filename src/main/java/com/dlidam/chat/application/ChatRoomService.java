@@ -115,7 +115,7 @@ public class ChatRoomService {
                 .orElseThrow(() -> new ChatRoomNotFoundException("요청하는 ID에 해당하는 채팅방을 찾을 수 없습니다."));
     }
 
-    public ChatRoomResponseDTO getChatMessages(Long chatRoomId, Long userId) {
+    public ChatRoomResponseDTO getChatMessages(final Long chatRoomId, final Long userId) {
 
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
