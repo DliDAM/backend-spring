@@ -113,10 +113,10 @@ public class WebSocketProxy {
                 ObjectMapper objectMapper = new ObjectMapper();
                 ChatMessageRequestDTO chatMessageRequestDTO = objectMapper.readValue(messagePayload, ChatMessageRequestDTO.class);
 
-                log.info("========1=========");
-                chatMessageService.save(chatMessageRequestDTO);
-                log.info("========2=========");
                 User sender = userService.findUserByCustomId(chatMessageRequestDTO.getSenderId());
+                log.info("========1=========");
+                chatMessageService.save(chatMessageRequestDTO, sender.getName());
+                log.info("========2=========");
                 if(!sender.isDisabled()){   // 비장애인 사용자
                     namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                             .sendEvent("messageData", chatMessageRequestDTO);
