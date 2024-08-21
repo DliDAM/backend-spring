@@ -20,6 +20,11 @@ public class FriendListRepositoryImpl implements FriendListRepository {
     }
 
     @Override
+    public void deleteByUserIdAndFriendId(final Long userId, final String customId) {
+        jpaFriendListRepository.deleteByUserIdAndFriendId(userId, customId);
+    }
+
+    @Override
     public FriendList save(final FriendList newFriend) {
         return jpaFriendListRepository.save(newFriend);
     }

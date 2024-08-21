@@ -3,11 +3,9 @@ package com.dlidam.friend.presentation;
 import com.dlidam.authentication.configuration.AuthenticateUser;
 import com.dlidam.authentication.domain.dto.AuthenticationUserInfo;
 import com.dlidam.friend.application.FriendService;
-import com.dlidam.friend.application.dto.AddFriendDto;
-import com.dlidam.friend.application.dto.FriendDto;
-import com.dlidam.friend.application.dto.UserDto;
-import com.dlidam.friend.presentation.dto.request.FriendAddRequest;
-import com.dlidam.friend.presentation.dto.request.UserSearchRequest;
+import com.dlidam.friend.application.dto.*;
+import com.dlidam.friend.presentation.dto.request.FriendIdRequest;
+import com.dlidam.friend.presentation.dto.response.AddSuccessResponse;
 import com.dlidam.friend.presentation.dto.response.FriendResponse;
 import com.dlidam.friend.presentation.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,25 +29,26 @@ public class FriendController {
     @GetMapping("/search")
     public ResponseEntity<UserResponse> getFriend(
             @AuthenticateUser final AuthenticationUserInfo userInfo,
-            final UserSearchRequest request
+            final FriendIdRequest request
     ){
 //        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
         log.info("userId = {}의 아아디로 친구 검색 요청이 들어왔습니다", userInfo.userId());
-        final UserDto userDto = friendService.getFriend(request);
+        final UserDto userDto = friendService.getFriend(FriendOperationDto.of(request, userInfo.userId()));
         final UserResponse response = UserResponse.from(userDto);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "아이디로 친구 추가")
     @PostMapping("/add")
-    public ResponseEntity<Void> addFriend(
+    public ResponseEntity<AddSuccessResponse> addFriend(
             @AuthenticateUser final AuthenticationUserInfo userInfo,
-            @RequestBody @Valid final FriendAddRequest request
+            @RequestBody @Valid final FriendIdRequest request
     ){
 //        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
         log.info("userId = {}의 친구 추가 요청이 들어왔습니다.", userInfo.userId());
-        friendService.addFriend(AddFriendDto.of(request, userInfo.userId()));
-        return ResponseEntity.noContent().build();
+        final AddSuccessDto addSuccessDto = friendService.addFriend(FriendOperationDto.of(request, userInfo.userId()));
+        final AddSuccessResponse response = AddSuccessResponse.from(addSuccessDto);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "친구 목록 조회")
@@ -69,5 +68,15 @@ public class FriendController {
 
     // todo: 친구 즐겨 찾기에 추가 ( POST: /friend/close )
 
-    // todo: 친구 삭제 ( DELETE: /friend/delete )
+    @Operation(summary = "친구 삭제")
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteFriend(
+            @AuthenticateUser final AuthenticationUserInfo userInfo,
+            @RequestBody @Valid final FriendIdRequest request
+    ){
+//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
+        log.info("userId = {}의 친구 삭제 요청이 들어왔습니다.", userInfo.userId());
+        friendService.deleteFriend(FriendOperationDto.of(request, userInfo.userId()));
+        return ResponseEntity.noContent().build();
+    }
 }

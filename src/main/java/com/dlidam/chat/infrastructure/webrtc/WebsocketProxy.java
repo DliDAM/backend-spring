@@ -37,15 +37,13 @@ public class WebsocketProxy {
     public WebsocketProxy(SocketIOServer server, ConfigUtil configUtil, ChatMessageService chatMessageService,
                           UserService userService) {
         this.fastApiEndpoint = configUtil.getFastApiEndpoint();
-        this.namespace = server.addNamespace("/websocket");
+        this.namespace = server.addNamespace("/websocket"); // 경로: "/websocket"
         this.namespace.addConnectListener(onConnected());
         this.namespace.addDisconnectListener(onDisconnected());
-        this.namespace.addEventListener("textMessage", ChatMessageRequestDTO.class, textMessageListener());
+        this.namespace.addEventListener("textMessage", ChatMessageRequestDTO.class, textMessageListener());     // 이벤트: "textMessage"
         this.chatMessageService = chatMessageService;
         this.userService = userService;
     }
-
-    // 경로: "/websocket", 이벤트: "textMessage"
 
     // WebSocket 연결 설정
     private void connectFastAPI(Timer timer, SocketIOClient client){
