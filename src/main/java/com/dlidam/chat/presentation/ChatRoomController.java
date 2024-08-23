@@ -80,24 +80,4 @@ public class ChatRoomController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-
-//    @GetMapping("/user/chatrooms")
-//    @Operation(summary = "유저의 채팅방 목록 보여주기", description = "유저의 채팅리스트 보여주기 api")
-//    public ResponseEntity<List<ChatRoomSimpleDTO>> userChatRoomList(@AuthenticateUser final  AuthenticationUserInfo userInfo) {
-//
-//         User user = userService.findUSerById(userInfo.userId());
-//        List<ChatRoom> chatRoomsList = chatRoomService.findAllChatRoomListByUser(user);
-//
-//        chatRoomService.setLastChatMessage(chatRoomsList);
-//        List<ChatRoomSimpleDTO> chatRoomSimpleDTOList = ChatRoomSimpleDTO.toChatRoomSimpleListDTO(chatRoomsList);
-//        chatMessageService.sortChatMessage(chatRoomSimpleDTOList);
-//
-//        List<ChatRoomSimpleDTO> response = chatRoomSimpleDTOList;
-//        return ResponseEntity.status(HttpStatus.OK).body(response);
-//    }
-
-//    @PostMapping("/send")
-//    @Operation(summary = "사용자 채팅 입력 API")
-//    public ResponseEntity<MessageResponse> send
-
 }

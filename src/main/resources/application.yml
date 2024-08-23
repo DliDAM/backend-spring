@@ -22,6 +22,13 @@ server:
 
 serverName: local_server
 
+socket:
+  io:
+    server: 127.0.0.1  # 추후에 배포한  Spring 서버 IP주소로 바꿔야 함
+    port: 9092
+    host: localhost
+  fast-api-endpoint: ${fast-api-endpoint}
+
 ---
 
 spring:
@@ -35,6 +42,12 @@ server:
 
 serverName: blue_server
 
+socket:
+  io:
+    server: 3.34.121.34  # 추후에 배포한  Spring 서버 IP주소로 바꿔야 함
+    port: 9092
+    host: localhost
+  fast-api-endpoint: ${fast-api-endpoint}
 ---
 
 spring:
@@ -47,6 +60,13 @@ server:
   serverAddress: 3.34.121.34
 
 serverName: green_server
+
+socket:
+  io:
+    server: 3.34.121.34  # 추후에 배포한  Spring 서버 IP주소로 바꿔야 함
+    port: 9092
+    host: localhost
+  fast-api-endpoint: ${fast-api-endpoint}
 
 ---
 

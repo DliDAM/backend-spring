@@ -9,14 +9,15 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 
 @Configuration
-public class CorsConfig {
+public class CorsConfig  {
 
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList("http://localhost:8080", "https://localhost3000",
-                "https://localhost:8000"));
+                "https://localhost:8000","http://3.34.121.34", "http://43.203.3.70" , "ws://43.203.3.70"));
+
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setExposedHeaders(Arrays.asList("Authorization", "Content-Type","Cookie","Set-Cookie"));
