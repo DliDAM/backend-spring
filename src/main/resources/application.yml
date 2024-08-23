@@ -38,13 +38,13 @@ spring:
 
 server:
   port: 8080
-  serverAddress: 3.34.121.34
+  serverAddress: ${server-ip}
 
 serverName: blue_server
 
 socket:
   io:
-    server: 3.34.121.34  # 추후에 배포한  Spring 서버 IP주소로 바꿔야 함
+    server: ${server-ip}
     port: 9092
     host: localhost
   fast-api-endpoint: ${fast-api-endpoint}
@@ -57,13 +57,13 @@ spring:
 
 server:
   port: 8081
-  serverAddress: 3.34.121.34
+  serverAddress: ${server-ip}
 
 serverName: green_server
 
 socket:
   io:
-    server: 3.34.121.34  # 추후에 배포한  Spring 서버 IP주소로 바꿔야 함
+    server: ${server-ip}
     port: 9092
     host: localhost
   fast-api-endpoint: ${fast-api-endpoint}
