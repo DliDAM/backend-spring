@@ -21,12 +21,12 @@ public class ChatMessageService {
     public final ChatRoomService chatRoomService;
     public final ChatMessageRepository chatMessageRepository;
 
-    public ChatMessage save(final ChatMessageRequestDTO request) {
+    public ChatMessage save(final ChatMessageRequestDTO request, final String senderName) {
           final ChatRoom chatRoom = chatRoomService.findById(request.getChatRoomId());
 
           final ChatMessage newChatMessage = new ChatMessage(
                   request.getSenderId(),
-                  request.getSenderName(),
+                  senderName,
                   request.getMessage(),
                   chatRoom
           );

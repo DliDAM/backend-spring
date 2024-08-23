@@ -13,6 +13,7 @@ import java.util.List;
 public class ChatRoomResponseDTO {
 
     private Long chatRoomId;
+    private String customId;
     private String senderName;
     private String receiverName;
     private List<ChatMessageDTO> messageDTOS;
@@ -24,6 +25,7 @@ public class ChatRoomResponseDTO {
 
         return new ChatRoomResponseDTO(
                 chatRoom.getId(),
+                chatRoom.getSender().getCustomId(),
                 chatRoom.getSender().getName(),
                 chatRoom.getReceiver().getName(),
                 messageDTOS,
@@ -36,6 +38,7 @@ public class ChatRoomResponseDTO {
 
         return new ChatRoomResponseDTO(
                 chatRoom.getId(),
+                chatRoom.getReceiver().getCustomId(),
                 chatRoom.getReceiver().getName(),
                 chatRoom.getSender().getName(),
                 messageDTOS,

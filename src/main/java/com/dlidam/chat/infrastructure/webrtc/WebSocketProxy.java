@@ -59,7 +59,7 @@ public class WebSocketProxy {
                 try {
                     if(fastAPIWebSocket == null || fastAPIWebSocket.isClosed()) {
                         fastAPIWebSocket = new WebSocketUtil(
-                                new URI(fastApiEndpoint + "/ws"),
+                                new URI(fastApiEndpoint),
                                 new Draft_6455(),
                                 client
                         );
@@ -72,7 +72,6 @@ public class WebSocketProxy {
         }, 0, 60);
     }
 
-    // 클라이언트 연결 시 처리
     private ConnectListener onConnected() {
         return client -> {
             log.info("[WebRTCProxy]-[Socketio]-[{}] Connected to WebRTCProxy Socketio", client.getSessionId().toString());
@@ -87,7 +86,7 @@ public class WebSocketProxy {
             client.joinRoom(chatRoomId);
 
             timer = new Timer();
-//            connectFastAPI(timer, client);
+            connectFastAPI(timer, client);
         };
     }
 
@@ -113,30 +112,35 @@ public class WebSocketProxy {
                 ObjectMapper objectMapper = new ObjectMapper();
                 ChatMessageRequestDTO chatMessageRequestDTO = objectMapper.readValue(messagePayload, ChatMessageRequestDTO.class);
 
-                log.info("========1=========");
-                chatMessageService.save(chatMessageRequestDTO);
-                log.info("========2=========");
                 User sender = userService.findUserByCustomId(chatMessageRequestDTO.getSenderId());
+                log.info("========1=========");
+                chatMessageService.save(chatMessageRequestDTO, sender.getName());
+                log.info("========2=========");
                 if(!sender.isDisabled()){   // 비장애인 사용자
                     namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                             .sendEvent("messageData", chatMessageRequestDTO);
                 }
-//                else {      // 청각 장애인 사용자
-//                    if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
-//                        // FastAPI 서버에 문자열 메시지 전송
-//                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
-//
-//                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
-//                        fastAPIWebSocket.onMessageCallback = audioData -> {
-//                            // 클라이언트로 오디오 데이터 전송
-//                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
-//                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
-//                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
-//                        };
-//                    } else {
-//                        log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
-//                    }
-//                }
+                else {      // 청각 장애인 사용자
+                    if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
+                        // FastAPI 서버에 문자열 메시지 전송
+                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
+
+                        log.info("========3=========");
+
+                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
+                        fastAPIWebSocket.onMessageCallback = audioData -> {
+                            // 클라이언트로 오디오 데이터 전송
+                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
+                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
+
+                            log.info("audioData = {}", audioData);
+
+                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
+                        };
+                    } else {
+                        log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
+                    }
+                }
             } catch (Exception ex) {
                 log.error("[WebRTCProxy]-[Socketio] Exception while processing text message", ex);
             }
