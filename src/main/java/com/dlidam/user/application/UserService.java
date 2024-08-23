@@ -6,6 +6,7 @@ import com.dlidam.user.application.dto.CustomIdIsAvailableDto;
 import com.dlidam.user.application.exception.UserNotFoundException;
 import com.dlidam.user.domain.User;
 import com.dlidam.user.domain.repository.UserRepository;
+import com.dlidam.user.presentation.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,13 @@ public class UserService {
 
     }
 
+    public CustomIdDto getMyInfo(final Long userId) {
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자 정보를 찾을 수 없습니다."));
+
+        return new CustomIdDto(user.getCustomId());
+    }
+
     public CustomIdIsAvailableDto validateByCustomId(final CustomIdDto customIdDto) {
 
         boolean isAvailable = !userRepository.existsByCustomId(customIdDto.customId());
@@ -46,4 +54,6 @@ public class UserService {
         return userRepository.findByCustomId(senderId)
                 .orElseThrow();
     }
+
+
 }
