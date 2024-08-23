@@ -72,7 +72,6 @@ public class WebSocketProxy {
         }, 0, 60);
     }
 
-    // 클라이언트 연결 시 처리
     private ConnectListener onConnected() {
         return client -> {
             log.info("[WebRTCProxy]-[Socketio]-[{}] Connected to WebRTCProxy Socketio", client.getSessionId().toString());
