@@ -9,6 +9,7 @@ import com.dlidam.user.presentation.dto.request.CreateUserRequest;
 import com.dlidam.user.application.UserService;
 import com.dlidam.user.presentation.dto.request.CustomIdRequest;
 import com.dlidam.user.presentation.dto.response.CustomIdIsAvailableResponse;
+import com.dlidam.user.presentation.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,18 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "회원 아이디 반환")
+    @GetMapping("/my-info")
+    public ResponseEntity<UserResponse> getMyInfo(
+            @AuthenticateUser final AuthenticationUserInfo userInfo
+    ) {
+//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
+        log.info("userId = {}의 내 아이디 조회 요청이 들어왔습니다.", userInfo.userId());
+        final CustomIdDto customIdDto = userService.getMyInfo(userInfo.userId());
+        final UserResponse userResponse = UserResponse.from(customIdDto);
+        return ResponseEntity.ok(userResponse);
+    }
+
     @Operation(summary = "사용자 아이디 중복 여부")
     @PostMapping("/validate")
     public ResponseEntity<CustomIdIsAvailableResponse> validateByCustomId(
@@ -44,7 +57,6 @@ public class UserController {
     ){
 //        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(3L);
         log.info("userId = {}의 사용자 아이디 중복 조회 요청이 들어왔습니다.", userInfo.userId());
-        log.info("customId 요청 확인 = {}", customIdRequest.customId());
         final CustomIdIsAvailableDto customIdIsAvailableDto = userService.validateByCustomId(CustomIdDto.of(customIdRequest));
         final CustomIdIsAvailableResponse response = CustomIdIsAvailableResponse.from(customIdIsAvailableDto);
 
