@@ -59,7 +59,7 @@ public class WebSocketProxy {
                 try {
                     if(fastAPIWebSocket == null || fastAPIWebSocket.isClosed()) {
                         fastAPIWebSocket = new WebSocketUtil(
-                                new URI(fastApiEndpoint + "/ws/new"),
+                                new URI(fastApiEndpoint),
                                 new Draft_6455(),
                                 client
                         );
