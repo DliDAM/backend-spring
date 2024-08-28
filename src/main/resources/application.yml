@@ -65,7 +65,7 @@ socket:
   io:
     server: ${server-ip}
     port: 9092
-    host: ${server-ip}
+    host: 0.0.0.0
   fast-api-endpoint: ${fast-api-endpoint}
 
 ---

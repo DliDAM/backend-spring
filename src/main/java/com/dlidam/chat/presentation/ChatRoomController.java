@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,9 @@ import java.util.List;
 @RequestMapping("/chat")
 @Slf4j
 public class ChatRoomController {
+
+    @Value("${socket.io.host}")
+    private String host;
 
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
@@ -79,5 +83,13 @@ public class ChatRoomController {
         final ChatRoomResponseDTO response = chatRoomService.getChatMessages(chatRoomId,userInfo.userId());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping("/socketIo")
+    @Operation(summary = "socektIO IP갖고 오기")
+    public ResponseEntity<?> getChatMessages(
+    ){
+        return ResponseEntity.status(HttpStatus.OK).body(host);
+    }
+
 
 }
