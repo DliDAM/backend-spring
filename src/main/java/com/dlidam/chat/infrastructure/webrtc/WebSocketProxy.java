@@ -120,27 +120,27 @@ public class WebSocketProxy {
                     namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                             .sendEvent("messageData", chatMessageRequestDTO);
                 }
-                else {      // 청각 장애인 사용자
-                    if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
-                        // FastAPI 서버에 문자열 메시지 전송
-                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
-
-                        log.info("========3=========");
-
-                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
-                        fastAPIWebSocket.onMessageCallback = audioData -> {
-                            // 클라이언트로 오디오 데이터 전송
-                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
-                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
-
-                            log.info("audioData = {}", audioData);
-
-                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
-                        };
-                    } else {
-                        log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
-                    }
-                }
+//                else {      // 청각 장애인 사용자
+//                    if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
+//                        // FastAPI 서버에 문자열 메시지 전송
+//                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
+//
+//                        log.info("========3=========");
+//
+//                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
+//                        fastAPIWebSocket.onMessageCallback = audioData -> {
+//                            // 클라이언트로 오디오 데이터 전송
+//                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
+//                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
+//
+//                            log.info("audioData = {}", audioData);
+//
+//                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
+//                        };
+//                    } else {
+//                        log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
+//                    }
+//                }
             } catch (Exception ex) {
                 log.error("[WebRTCProxy]-[Socketio] Exception while processing text message", ex);
             }
