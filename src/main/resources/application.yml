@@ -64,7 +64,7 @@ serverName: green_server
 socket:
   io:
     server: ${server-ip}
-    port: 9092
+    port: 9093
     host: 0.0.0.0
   fast-api-endpoint: ${fast-api-endpoint}
 
