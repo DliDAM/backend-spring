@@ -19,5 +19,6 @@ public class ConfigUtil {
 
     @Value("${socket.fast-api-endpoint}")
     private String fastApiEndpoint;
+
 }
 
