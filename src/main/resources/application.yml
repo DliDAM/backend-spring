@@ -65,7 +65,7 @@ socket:
   io:
     server: ${server-ip}
     port: 9093
-    host: 0.0.0.0
+    host: ${server-ip}
   fast-api-endpoint: ${fast-api-endpoint}
 
 ---
@@ -74,3 +74,9 @@ spring:
   config:
     activate:
       on-profile: common
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
