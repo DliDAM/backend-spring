@@ -26,7 +26,7 @@ socket:
   io:
     server: 127.0.0.1
     port: 9092
-    host: localhost
+    host: 0.0.0.0
   fast-api-endpoint: ${fast-api-endpoint}
 
 ---
@@ -46,7 +46,7 @@ socket:
   io:
     server: ${server-ip}
     port: 9092
-    host: ${server-ip}
+    host: 0.0.0.0
   fast-api-endpoint: ${fast-api-endpoint}
 ---
 
@@ -65,7 +65,7 @@ socket:
   io:
     server: ${server-ip}
     port: 9093
-    host: ${server-ip}
+    host: 0.0.0.0
   fast-api-endpoint: ${fast-api-endpoint}
 
 ---
