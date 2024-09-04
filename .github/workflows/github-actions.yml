@@ -71,10 +71,12 @@ jobs:
             echo "CURRENT_PORT=8080" >> $GITHUB_ENV
             echo "STOPPED_PORT=8081" >> $GITHUB_ENV
             echo "TARGET_UPSTREAM=green" >> $GITHUB_ENV
+            echo "TARGET_WEBSOCKET_PORT=9093" >> $GITHUB_ENV
           else
             echo "CURRENT_PORT=8081" >> $GITHUB_ENV
             echo "STOPPED_PORT=8080" >> $GITHUB_ENV
             echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
+            echo "TARGET_WEBSOCKET_PORT=9092" >> $GITHUB_ENV
           fi
 
       - name: Docker Compose
@@ -103,7 +105,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{env.TARGET_UPSTREAM}};" > etc/nginx/conf.d/service-env.inc && nginx -s reload'
+            sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{env.TARGET_UPSTREAM}};" > /etc/nginx/conf.d/service-env.inc &&
+            echo "set \$websocket_port ${{env.TARGET_WEBSOCKET_PORT}};" >> /etc/nginx/conf.d/service-env.inc && nginx -s reload'
 
       - name: Stop current server
         uses: appleboy/ssh-action@master

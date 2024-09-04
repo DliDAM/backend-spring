@@ -8,8 +8,8 @@ import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.dlidam.chat.application.ChatMessageService;
 import com.dlidam.chat.dto.request.ChatMessageRequestDTO;
-import com.dlidam.configuration.webrtc.ConfigUtil;
-import com.dlidam.configuration.webrtc.WebSocketUtil;
+import com.dlidam.configuration.websocket.ConfigUtil;
+import com.dlidam.configuration.websocket.WebSocketUtil;
 import com.dlidam.user.application.UserService;
 import com.dlidam.user.domain.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.util.Base64;
 import java.util.Timer;
 import java.util.TimerTask;
 

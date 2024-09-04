@@ -37,7 +37,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             final Object handler) throws Exception
     {
         final String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        log.info("액세스 토큰 = {} 디코드 하는 중 입니다.", accessToken);
+//        log.info("액세스 토큰 = {} 디코드 하는 중 입니다.", accessToken);
 
         // 토큰이 없거나 비어있는 경우
         if(isNotRequiredAuthentication(accessToken)){
