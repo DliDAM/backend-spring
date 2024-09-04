@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.util.Base64;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,10 +36,14 @@ public class WebSocketProxy {
     private final UserService userService;
 
     @Autowired
-    public WebSocketProxy(SocketIOServer server, ConfigUtil configUtil, ChatMessageService chatMessageService,
-                          UserService userService) {
+    public WebSocketProxy(
+            SocketIOServer server,
+            ConfigUtil configUtil,
+            ChatMessageService chatMessageService,
+            UserService userService
+    ) {
         this.fastApiEndpoint = configUtil.getFastApiEndpoint();
-        // WebSocket을 연곃을 위한 네임스페이스
+        // WebSocket을 연결을 위한 네임스페이스
         this.namespace = server.addNamespace("/websocket");
         // 클라이언트가 연결될 때 호출
         this.namespace.addConnectListener(onConnected());
@@ -119,27 +124,27 @@ public class WebSocketProxy {
                     namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                             .sendEvent("messageData", chatMessageRequestDTO);
                 }
-//                else {      // 청각 장애인 사용자
-//                    if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
-//                        // FastAPI 서버에 문자열 메시지 전송
-//                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
-//
-//                        log.info("========3=========");
-//
-//                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
-//                        fastAPIWebSocket.onMessageCallback = audioData -> {
-//                            // 클라이언트로 오디오 데이터 전송
-//                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
-//                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
-//
-//                            log.info("audioData = {}", audioData);
-//
-//                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
-//                        };
-//                    } else {
-//                        log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
-//                    }
-//                }
+                else {      // 청각 장애인 사용자
+                    if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
+                        // FastAPI 서버에 문자열 메시지 전송
+                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
+
+                        log.info("========3=========");
+
+                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
+                        fastAPIWebSocket.onMessageCallback = audioData -> {
+                            // 클라이언트로 오디오 데이터 전송
+                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
+                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
+
+                            log.info("audioData = {}", audioData);
+
+                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
+                        };
+                    } else {
+                        log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
+                    }
+                }
             } catch (Exception ex) {
                 log.error("[WebRTCProxy]-[Socketio] Exception while processing text message", ex);
             }
