@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 public class WebSocketUtil extends WebSocketClient {
 
     private final SocketIOClient socketIOClient;
+
     public WebSocketUtil(URI serverUri, Draft protocolDraft, SocketIOClient socketIOClient) {
         super(serverUri, protocolDraft);
         this.socketIOClient = socketIOClient;
