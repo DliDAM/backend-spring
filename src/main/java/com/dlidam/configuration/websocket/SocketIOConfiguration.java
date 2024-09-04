@@ -1,4 +1,4 @@
-package com.dlidam.configuration.webrtc;
+package com.dlidam.configuration.websocket;
 
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.Transport;
@@ -11,7 +11,8 @@ public class SocketIOConfiguration {
     @Bean
     public SocketIOServer socketIOServer(ConfigUtil configUtil) {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
-        config.setHostname(config.getHostname());
+
+        config.setHostname(configUtil.getHost());
         config.setPort(Integer.parseInt(configUtil.getSocketPort()));
         config.setOrigin("*");
         config.setAllowCustomRequests(true);
