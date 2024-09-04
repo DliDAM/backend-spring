@@ -24,7 +24,7 @@ serverName: local_server
 
 socket:
   io:
-    server: 127.0.0.1  # 추후에 배포한  Spring 서버 IP주소로 바꿔야 함
+    server: 127.0.0.1
     port: 9092
     host: localhost
   fast-api-endpoint: ${fast-api-endpoint}
@@ -64,7 +64,7 @@ serverName: green_server
 socket:
   io:
     server: ${server-ip}
-    port: 9092
+    port: 9093
     host: 0.0.0.0
   fast-api-endpoint: ${fast-api-endpoint}
 
@@ -74,21 +74,3 @@ spring:
   config:
     activate:
       on-profile: common
-
-#  jpa:
-#    hibernate:
-#      ddl-auto: create # ???? drop?? ?? data? ?? ? ? ??
-#    properties:
-#      hibernate:
-#        format_sql: true
-#        show_sql: true   # sout ?? ??
-#        default_batch_fetch_size: 100
-#    defer-datasource-initialization: true
-#  sql:
-#    init:
-#      mode: always
-#
-#logging:
-#  level:
-#    org.hibernate.SQL: debug  # logger? ?? ??
-#    org.hibernate.type: trace
