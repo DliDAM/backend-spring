@@ -7,14 +7,16 @@ public record FriendResponse(
         String name,
         String friendId,
         String statusMessage,
-        FriendType friendType
+        FriendType friendType,
+        boolean isDisabled
 ) {
     public static FriendResponse from(final FriendDto dto) {
         return new FriendResponse(
                 dto.name(),
                 dto.customId(),
                 dto.statusMessage(),
-                dto.friendType()
+                dto.friendType(),
+                dto.isDisabled()
         );
     }
 }
