@@ -39,7 +39,7 @@ public class WebSocketProxy {
     private final SocketIOServer server;
     private final SocketIONamespace namespace;
 
-    private WebSocketUtil fastAPIWebSocket;
+//    private WebSocketUtil fastAPIWebSocket;
     private Timer timer;
 
     private final AudioConverter audioConverter;
@@ -64,25 +64,25 @@ public class WebSocketProxy {
         this.audioConverter = new AudioConverter(ffmpegConfig);
     }
 
-    private void connectFastAPI(Timer timer, SocketIOClient client){
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    if(fastAPIWebSocket == null || fastAPIWebSocket.isClosed()) {
-                        fastAPIWebSocket = new WebSocketUtil(
-                                new URI(fastApiEndpoint),
-                                new Draft_6455(),
-                                client
-                        );
-                        fastAPIWebSocket.connectBlocking();
-                    }
-                } catch (Exception e) {
-                    log.error("[WebRTCProxy]-[connectFastAPI] WebSocket Connection Failed");
-                }
-            }
-        }, 0, 60);
-    }
+//    private void connectFastAPI(Timer timer, SocketIOClient client){
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                try {
+//                    if(fastAPIWebSocket == null || fastAPIWebSocket.isClosed()) {
+//                        fastAPIWebSocket = new WebSocketUtil(
+//                                new URI(fastApiEndpoint),
+//                                new Draft_6455(),
+//                                client
+//                        );
+//                        fastAPIWebSocket.connectBlocking();
+//                    }
+//                } catch (Exception e) {
+//                    log.error("[WebRTCProxy]-[connectFastAPI] WebSocket Connection Failed");
+//                }
+//            }
+//        }, 0, 60);
+//    }
 
     private ConnectListener onConnected() {
         return client -> {
@@ -100,7 +100,7 @@ public class WebSocketProxy {
             client.joinRoom(chatRoomId);
 
             timer = new Timer();
-            connectFastAPI(timer, client);
+//            connectFastAPI(timer, client);
         };
     }
 
@@ -114,9 +114,9 @@ public class WebSocketProxy {
                 timer.purge();
             }
 
-            if(fastAPIWebSocket != null) {
-                fastAPIWebSocket.close();
-            }
+//            if(fastAPIWebSocket != null) {
+//                fastAPIWebSocket.close();
+//            }
         };
     }
 
@@ -136,24 +136,24 @@ public class WebSocketProxy {
                     namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                             .sendEvent("messageData", chatMessageRequestDTO);
                 }
-                else {      // 청각 장애인 사용자
-                    if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
-                        // FastAPI 서버에 문자열 메시지 전송
-                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
-                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
-                        fastAPIWebSocket.onMessageCallback = audioData -> {
-                            // 클라이언트로 오디오 데이터 전송
-                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
-                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
-
-                            log.info("audioData = {}", audioData);
-
-                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
-                        };
-                    } else {
-                        log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
-                    }
-                }
+//                else {      // 청각 장애인 사용자
+//                    if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
+//                        // FastAPI 서버에 문자열 메시지 전송
+//                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
+//                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
+//                        fastAPIWebSocket.onMessageCallback = audioData -> {
+//                            // 클라이언트로 오디오 데이터 전송
+//                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
+//                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
+//
+//                            log.info("audioData = {}", audioData);
+//
+//                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
+//                        };
+//                    } else {
+//                        log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
+//                    }
+//                }
             } catch (Exception ex) {
                 log.error("[WebRTCProxy]-[Socketio] Exception while processing text message", ex);
             }
