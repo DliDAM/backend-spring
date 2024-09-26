@@ -64,7 +64,6 @@ public class WebSocketProxy {
         this.audioConverter = new AudioConverter(ffmpegConfig);
     }
 
-    // FastAPI 서버와 WebSocket 연결 설정
     private void connectFastAPI(Timer timer, SocketIOClient client){
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -92,7 +91,6 @@ public class WebSocketProxy {
                     client.getSessionId().toString(),
                     handshakeData.getUrl());
 
-            // 클라이언트가 연결 시에 데이터베이스의 채팅방 ID로 WebSocket 룸에 참가
             String chatRoomId = client.getHandshakeData().getSingleUrlParam("chatRoomId");
             if(chatRoomId == null) {
                 log.error("chatRoomId is null. Cannot join the room.");
@@ -106,7 +104,6 @@ public class WebSocketProxy {
         };
     }
 
-    // 클라이언트 연결 종료 시 처리
     private DisconnectListener onDisconnected() {
         return client -> {
             log.info("[WebRTCProxy]-[Socketio]-[{}] Disconnected from WebSocketProxy Socketio Module",
@@ -133,22 +130,16 @@ public class WebSocketProxy {
                 ChatMessageRequestDTO chatMessageRequestDTO = objectMapper.readValue(messagePayload, ChatMessageRequestDTO.class);
 
                 User sender = userService.findUserByCustomId(chatMessageRequestDTO.getSenderId());
-                log.info("========1=========");
                 chatMessageService.save(chatMessageRequestDTO, sender.getName());
-                log.info("========2=========");
 
                 if(!sender.isDisabled()){   // 비장애인 사용자
                     namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                             .sendEvent("messageData", chatMessageRequestDTO);
-                    log.info("========3=========");
                 }
                 else {      // 청각 장애인 사용자
                     if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
                         // FastAPI 서버에 문자열 메시지 전송
                         fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
-
-                        log.info("========3=========");
-
                         // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
                         fastAPIWebSocket.onMessageCallback = audioData -> {
                             // 클라이언트로 오디오 데이터 전송
