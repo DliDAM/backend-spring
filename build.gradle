@@ -45,10 +45,13 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 	testImplementation 'junit:junit:4.13.1'
 
-	// socket io
+	// socket.io
 	implementation 'com.corundumstudio.socketio:netty-socketio:2.0.3'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.java-websocket:Java-WebSocket:1.5.3'
+
+	// ffmpeg
+	implementation group: 'net.bramp.ffmpeg', name: 'ffmpeg', version: '0.7.0'
 
 }
 

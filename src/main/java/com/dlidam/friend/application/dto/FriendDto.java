@@ -8,14 +8,16 @@ public record FriendDto(
         String customId,
         String name,
         String statusMessage,
-        FriendType friendType
+        FriendType friendType,
+        boolean isDisabled
 ) {
     public static FriendDto from(final FriendList friendList, final User friend) {
         return new FriendDto(
                 friend.getCustomId(),
                 friend.getName(),
                 friend.getStatusMessage(),
-                friendList.getFriendType()
+                friendList.getFriendType(),
+                friend.isDisabled()
         );
     }
 }

@@ -5,6 +5,7 @@ import com.dlidam.authentication.domain.dto.AuthenticationUserInfo;
 import com.dlidam.user.application.dto.CreateUserDto;
 import com.dlidam.user.application.dto.CustomIdDto;
 import com.dlidam.user.application.dto.CustomIdIsAvailableDto;
+import com.dlidam.user.application.dto.UserInfoDto;
 import com.dlidam.user.presentation.dto.request.CreateUserRequest;
 import com.dlidam.user.application.UserService;
 import com.dlidam.user.presentation.dto.request.CustomIdRequest;
@@ -37,15 +38,15 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "회원 아이디 반환")
+    @Operation(summary = "회원 정보 반환")
     @GetMapping("/my-info")
     public ResponseEntity<UserResponse> getMyInfo(
             @AuthenticateUser final AuthenticationUserInfo userInfo
     ) {
 //        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
         log.info("userId = {}의 내 아이디 조회 요청이 들어왔습니다.", userInfo.userId());
-        final CustomIdDto customIdDto = userService.getMyInfo(userInfo.userId());
-        final UserResponse userResponse = UserResponse.from(customIdDto);
+        final UserInfoDto userInfoDto = userService.getMyInfo(userInfo.userId());
+        final UserResponse userResponse = UserResponse.from(userInfoDto);
         return ResponseEntity.ok(userResponse);
     }
 
