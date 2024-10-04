@@ -89,19 +89,12 @@ public class ChatRoomService {
 
     public List<ChatRoomWithLastMessageResponseDTO> getAllChatRooms(final Long userId) {
 
-        log.info("===1===");
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
 
-        log.info("===2===");
         final List<ChatRoomWithLastMessageDTO> chatRoomWithLastMessageDTOS =
                 chatRoomRepository.findAllChatRoomByUserIdOrderByLastMessage(user.getId());
 
-        for(ChatRoomWithLastMessageDTO dto : chatRoomWithLastMessageDTOS) {
-            log.info("chatRoomId ={}, lastMessage = {}", dto.getChatRoom(), dto.getChatMessage());
-        }
-
-        log.info("===3===");
         return chatRoomWithLastMessageDTOS.stream()
                 .map(dto -> ChatRoomWithLastMessageResponseDTO.of(user, dto))
                 .toList();

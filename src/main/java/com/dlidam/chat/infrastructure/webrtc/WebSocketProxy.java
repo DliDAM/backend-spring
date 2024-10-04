@@ -144,9 +144,7 @@ public class WebSocketProxy {
                         fastAPIWebSocket.onMessageCallback = audioData -> {
                             // 클라이언트로 오디오 데이터 전송
                             namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
-                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
-
-                            log.info("audioData = {}", audioData);
+                                    .sendEvent("audioData", audioData);
 
                             log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
                         };
