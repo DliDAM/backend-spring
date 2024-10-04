@@ -64,9 +64,9 @@ public class ChatRoomController {
     @GetMapping
     @Operation(summary = "사용자 채팅방 목록 조회 API")
     public ResponseEntity<List<ChatRoomWithLastMessageResponseDTO>> getChatRooms(
-            @AuthenticateUser final AuthenticationUserInfo userInfo
+//            @AuthenticateUser final AuthenticationUserInfo userInfo
     ){
-//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
+        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
         log.info("userId = {}의 채팅방 목록 요청이 들어왔습니다.", userInfo.userId());
         final List<ChatRoomWithLastMessageResponseDTO> responses = chatRoomService.getAllChatRooms(userInfo.userId());
         return ResponseEntity.status(HttpStatus.OK).body(responses);

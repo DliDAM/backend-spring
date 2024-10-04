@@ -14,6 +14,7 @@ import com.dlidam.user.application.exception.UserNotFoundException;
 import com.dlidam.user.domain.User;
 import com.dlidam.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -87,12 +89,19 @@ public class ChatRoomService {
 
     public List<ChatRoomWithLastMessageResponseDTO> getAllChatRooms(final Long userId) {
 
+        log.info("===1===");
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
 
+        log.info("===2===");
         final List<ChatRoomWithLastMessageDTO> chatRoomWithLastMessageDTOS =
                 chatRoomRepository.findAllChatRoomByUserIdOrderByLastMessage(user.getId());
 
+        for(ChatRoomWithLastMessageDTO dto : chatRoomWithLastMessageDTOS) {
+            log.info("chatRoomId ={}, lastMessage = {}", dto.getChatRoom(), dto.getChatMessage());
+        }
+
+        log.info("===3===");
         return chatRoomWithLastMessageDTOS.stream()
                 .map(dto -> ChatRoomWithLastMessageResponseDTO.of(user, dto))
                 .toList();
