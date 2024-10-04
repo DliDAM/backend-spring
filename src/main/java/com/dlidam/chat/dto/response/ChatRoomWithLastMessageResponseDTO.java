@@ -30,12 +30,22 @@ public class ChatRoomWithLastMessageResponseDTO {
                 final User partner = chatRoom.calculateChatPartnerOf(user);
                 final ChatMessage lastMessage = chatRoomWithLastMessageDTO.getChatMessage();
 
+                if(lastMessage != null) {
+                        return new ChatRoomWithLastMessageResponseDTO(
+                                chatRoom.getId(),
+                                partner.getCustomId(),
+                                partner.getName(),
+                                lastMessage.getMessage(),
+                                lastMessage.getCreatedTime()
+                        );
+                }
+
                 return new ChatRoomWithLastMessageResponseDTO(
                         chatRoom.getId(),
                         partner.getCustomId(),
                         partner.getName(),
-                        lastMessage.getMessage(),
-                        lastMessage.getCreatedTime()
+                        null,
+                        null
                 );
         }
 
