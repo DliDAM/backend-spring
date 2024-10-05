@@ -146,6 +146,8 @@ public class WebSocketProxy {
                             namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                                     .sendEvent("audioData", audioData);
 
+                            log.info("audioData = {}", audioData);
+
                             log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
                         };
                     } else {
