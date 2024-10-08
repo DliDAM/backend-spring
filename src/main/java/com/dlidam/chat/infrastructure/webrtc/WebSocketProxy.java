@@ -21,13 +21,18 @@ import org.java_websocket.drafts.Draft_6455;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+
+import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -153,21 +158,13 @@ public class WebSocketProxy {
 
                             log.info("audioData = {}", audioData);
 
-                            // Define audio format: 16-bit PCM, 1 channel (mono), sample rate 44100 Hz
-                            AudioFormat format = new AudioFormat(44100, 16, 1, true, true);
+                            log.info("output.raw 파일로 저장");
+                            String rawFilePath = "output.raw";
+                            saveAudioToFile(rawFilePath, audioData);
 
-                            // Create an InputStream from your raw audio data
-                            InputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
-                            AudioInputStream audioInputStream = new AudioInputStream(byteArrayInputStream, format, audioData.length / 2);
-
-                            // Play the audio
-                            Clip clip = AudioSystem.getClip();
-                            clip.open(audioInputStream);
-                            clip.start();
-
-                            // Wait for the audio to finish
-                            clip.drain();
-                            clip.close();
+                            log.info("output.raw를 output.wav로 변환");
+                            String wavFilePath = "output.wav";
+                            convertRawToWav(rawFilePath, wavFilePath, 22050, 1, 2);
 
                             log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
                         };
@@ -180,4 +177,32 @@ public class WebSocketProxy {
             }
         };
     }
+
+    private void saveAudioToFile(String outputFile, byte[] audioData) {
+        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+            fos.write(audioData);
+            log.info("Audio saved to {}", outputFile);
+        } catch (IOException e) {
+            log.error("Error saving audio to file: {}", e.getMessage());
+        }
+    }
+
+    private void convertRawToWav(String inputFile, String outputFile, float sampleRate, int channels, int sampleWidth) {
+        try {
+            // Create a new AudioInputStream
+            AudioFormat format = new AudioFormat(sampleRate, sampleWidth * 8, channels, true, false);
+            byte[] rawData = Files.readAllBytes(Paths.get(inputFile));
+
+            try (AudioInputStream audioInputStream = new AudioInputStream(
+                    new ByteArrayInputStream(rawData), format, rawData.length / (sampleWidth * channels))) {
+
+                // Write to the WAV file
+                AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, new File(outputFile));
+                log.info("Converted {} to {}", inputFile, outputFile);
+            }
+        } catch (Exception e) {
+            log.error("Error converting {} to {}: {}", inputFile, outputFile, e.getMessage());
+        }
+    }
+
 }
