@@ -6,6 +6,8 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
 
+import javax.sound.sampled.LineUnavailableException;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 
@@ -20,7 +22,7 @@ public class WebSocketUtil extends WebSocketClient {
     }
 
     public interface OnMessageCallback {
-        void onMessage(byte[] audioData);
+        void onMessage(byte[] audioData) throws LineUnavailableException, IOException;
     }
 
     public OnMessageCallback onMessageCallback;
@@ -31,7 +33,13 @@ public class WebSocketUtil extends WebSocketClient {
 
         // 콜백을 통해서 Spring 서버로 전송
         if (onMessageCallback != null) {
-            onMessageCallback.onMessage(bytes.array());
+            try {
+                onMessageCallback.onMessage(bytes.array());
+            } catch (LineUnavailableException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

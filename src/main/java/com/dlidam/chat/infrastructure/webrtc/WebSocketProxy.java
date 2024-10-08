@@ -21,12 +21,16 @@ import org.java_websocket.drafts.Draft_6455;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Base64;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Slf4j
 @Component
@@ -138,8 +142,9 @@ public class WebSocketProxy {
                 }
                 else {      // 청각 장애인 사용자
                     if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
+                        String jsonPayload = objectMapper.writeValueAsString(chatMessageRequestDTO);
                         // FastAPI 서버에 문자열 메시지 전송
-                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
+                        fastAPIWebSocket.send(jsonPayload);
                         // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
                         fastAPIWebSocket.onMessageCallback = audioData -> {
                             // 클라이언트로 오디오 데이터 전송
@@ -147,6 +152,22 @@ public class WebSocketProxy {
                                     .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
 
                             log.info("audioData = {}", audioData);
+
+                            // Define audio format: 16-bit PCM, 1 channel (mono), sample rate 44100 Hz
+                            AudioFormat format = new AudioFormat(44100, 16, 1, true, true);
+
+                            // Create an InputStream from your raw audio data
+                            InputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
+                            AudioInputStream audioInputStream = new AudioInputStream(byteArrayInputStream, format, audioData.length / 2);
+
+                            // Play the audio
+                            Clip clip = AudioSystem.getClip();
+                            clip.open(audioInputStream);
+                            clip.start();
+
+                            // Wait for the audio to finish
+                            clip.drain();
+                            clip.close();
 
                             log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
                         };
