@@ -12,4 +12,7 @@ public class ChatRoomWithLastMessageDTO {
     private ChatRoom chatRoom;
     private ChatMessage chatMessage;
 
+    public static ChatRoomWithLastMessageDTO of(final ChatRoom chatRoom, final ChatMessage chatMessage) {
+        return new ChatRoomWithLastMessageDTO(chatRoom, chatMessage);
+    }
 }

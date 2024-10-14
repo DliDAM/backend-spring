@@ -21,4 +21,9 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepository {
     public Optional<List<ChatMessage>> findAllByChatRoom(final ChatRoom chatRoom) {
         return jpaChatMessageRepository.findAllByChatRoom(chatRoom);
     }
+
+    @Override
+    public ChatMessage findLastMessageInChatRoom(final Long chatRoomId) {
+        return jpaChatMessageRepository.findLastMessageInChatRoom(chatRoomId);
+    }
 }
