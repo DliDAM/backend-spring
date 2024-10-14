@@ -44,7 +44,6 @@ public class ChatRoomService {
                 .orElseGet(() ->{
                     final ChatRoom newChatRoom = new ChatRoom(sender, receiver);
                     newChatRoom.setSenderConnectTrue();
-
                     return chatRoomRepository.save(newChatRoom);
                 });
 

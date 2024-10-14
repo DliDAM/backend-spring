@@ -33,7 +33,6 @@ public class DeviceTokenService {
         if(deviceToken.isDifferentToken(newDeviceToken)){
             deviceToken.updateDeviceToken(newDeviceToken);
         }
-
     }
 
     // DeviceToken 객체 생성 및 저장

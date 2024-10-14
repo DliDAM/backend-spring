@@ -4,6 +4,7 @@ import com.dlidam.friend.application.dto.*;
 import com.dlidam.friend.application.exception.FriendNotFoundException;
 import com.dlidam.friend.application.exception.MemberNotFoundException;
 import com.dlidam.friend.domain.FriendList;
+import com.dlidam.friend.domain.FriendType;
 import com.dlidam.friend.domain.repository.FriendListRepository;
 import com.dlidam.friend.presentation.dto.request.FriendIdRequest;
 import com.dlidam.user.domain.User;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.dlidam.friend.domain.FriendType.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -68,6 +71,26 @@ public class FriendService {
     }
 
     @Transactional
+    public void updateFriend(final FriendOperationDto friendDto) {
+        if(!userRepository.existsById(friendDto.userId())){
+            throw new MemberNotFoundException("지정한 사용자를 찾을 수 없습니다.");
+        }
+        if(!userRepository.existsByCustomId(friendDto.customId())){
+            throw new FriendNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다.");
+        }
+
+        final FriendList friendList = friendListRepository.findByUserIdAndFriendId(friendDto.userId(), friendDto.customId());
+
+        if(friendList.getFriendType().equals(FRIEND)){
+            friendList.updateFriendStatus(CLOSE_FRIEND);
+        } else {
+            friendList.updateFriendStatus(FRIEND);
+        }
+
+        friendListRepository.save(friendList);
+    }
+
+    @Transactional
     public void deleteFriend(final FriendOperationDto friendDto) {
         if(!userRepository.existsById(friendDto.userId())){
             throw new MemberNotFoundException("지정한 사용자를 찾을 수 없습니다.");
@@ -77,4 +100,6 @@ public class FriendService {
         }
         friendListRepository.deleteByUserIdAndFriendId(friendDto.userId(), friendDto.customId());
     }
+
+
 }

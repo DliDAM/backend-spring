@@ -39,8 +39,8 @@ public class AuthenticationController {
         final LoginInformationDto loginInformationDto =
                 authenticationService.login(
                         oauth2Type,
-                        request.accessToken(),
-                        request.deviceToken());
+//                        request.deviceToken(),
+                        request.accessToken());
 
         return ResponseEntity.ok(LoginInformationResponse.from(loginInformationDto));
     }
