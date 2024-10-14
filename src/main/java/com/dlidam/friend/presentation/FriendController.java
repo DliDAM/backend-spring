@@ -41,10 +41,10 @@ public class FriendController {
     @Operation(summary = "아이디로 친구 추가")
     @PostMapping("/add")
     public ResponseEntity<AddSuccessResponse> addFriend(
-//            @AuthenticateUser final AuthenticationUserInfo userInfo,
+            @AuthenticateUser final AuthenticationUserInfo userInfo,
             @RequestBody @Valid final FriendIdRequest request
     ){
-        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
+//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
         log.info("userId = {}의 친구 추가 요청이 들어왔습니다.", userInfo.userId());
         final AddSuccessDto addSuccessDto = friendService.addFriend(FriendOperationDto.of(request, userInfo.userId()));
         final AddSuccessResponse response = AddSuccessResponse.from(addSuccessDto);
@@ -54,9 +54,9 @@ public class FriendController {
     @Operation(summary = "친구 목록 조회")
     @GetMapping("/all")
     public ResponseEntity<List<FriendResponse>> getFriends(
-//            @AuthenticateUser final AuthenticationUserInfo userInfo
+            @AuthenticateUser final AuthenticationUserInfo userInfo
     ){
-        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
+//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
         log.info("userId = {}의 친구 목록 조회 요청이 들어왔습니다.", userInfo.userId());
         final List<FriendDto> friendDtos = friendService.getFriends(userInfo.userId());
         final List<FriendResponse> response = friendDtos.stream()
@@ -66,7 +66,17 @@ public class FriendController {
         return ResponseEntity.ok(response);
     }
 
-    // todo: 친구 즐겨 찾기에 추가 ( POST: /friend/close )
+    @Operation(summary = "즐겨찾기 친구 상태 변환")
+    @PostMapping("/favorite")
+    public ResponseEntity<Void> updateFavorite(
+            @AuthenticateUser final AuthenticationUserInfo userInfo,
+            @RequestBody @Valid final FriendIdRequest request
+    ){
+//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
+        log.info("userId = {}의 친구 즐겨 찾기 상태 변경 요청이 들어왔습니다.", userInfo.userId());
+        friendService.updateFriend(FriendOperationDto.of(request, userInfo.userId()));
+        return ResponseEntity.noContent().build();
+    }
 
     @Operation(summary = "친구 삭제")
     @DeleteMapping("/delete")

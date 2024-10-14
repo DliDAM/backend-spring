@@ -1,4 +1,4 @@
-package com.dlidam.chat.infrastructure.webrtc;
+package com.dlidam.chat.infrastructure.websocket;
 
 import com.corundumstudio.socketio.HandshakeData;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -156,15 +156,15 @@ public class WebSocketProxy {
                             namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                                     .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
 
-                            log.info("audioData = {}", audioData);
-
-                            log.info("output.raw 파일로 저장");
-                            String rawFilePath = "output.raw";
-                            saveAudioToFile(rawFilePath, audioData);
-
-                            log.info("output.raw를 output.wav로 변환");
-                            String wavFilePath = "output.wav";
-                            convertRawToWav(rawFilePath, wavFilePath, 22050, 1, 2);
+//                            log.info("audioData = {}", audioData);
+//
+//                            log.info("output.raw 파일로 저장");
+//                            String rawFilePath = "output.raw";
+//                            saveAudioToFile(rawFilePath, audioData);
+//
+//                            log.info("output.raw를 output.wav로 변환");
+//                            String wavFilePath = "output.wav";
+//                            convertRawToWav(rawFilePath, wavFilePath, 22050, 1, 2);
 
                             log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
                         };

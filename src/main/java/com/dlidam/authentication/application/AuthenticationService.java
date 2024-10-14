@@ -3,6 +3,7 @@ package com.dlidam.authentication.application;
 import com.dlidam.authentication.application.dto.LoginInformationDto;
 import com.dlidam.authentication.application.dto.LoginUserInformationDto;
 import com.dlidam.authentication.application.dto.TokenDto;
+import com.dlidam.authentication.application.util.RandomCustomIdGenerator;
 import com.dlidam.authentication.domain.Oauth2UserInformationProviderComposite;
 import com.dlidam.authentication.domain.TokenDecoder;
 import com.dlidam.authentication.domain.TokenEncoder;
@@ -47,24 +48,23 @@ public class AuthenticationService {
     @Transactional
     public LoginInformationDto login(
             final Oauth2Type oauth2Type,
-            final String oauth2AccessToken,
-            final String deviceToken
+//            final String deviceToken,
+            final String oauth2AccessToken
     ) {
-        log.info("OAuth2Provider로부터 사용자 정보를 가져오는 로직");
+        log.info("1. OAuth2Provider 사용자 정보 조회");
         final OAuth2UserInformationProvider provider = providerComposite.findProvider(oauth2Type);
-        log.info("토큰으로 사용자 정보(oauthId) 요청 로직");
+        log.info("2. 토큰으로 사용자 정보(oauthId) 조회");
         final UserInformationDto userInformationDto = provider.findUserInformation(oauth2AccessToken);
-        log.info("이미 가입한 회원인지 확인하고 사용자 정보(객체) 요청 로직");
+        log.info("3. 이미 가입한 회원인지 확인하고 사용자 정보(객체) 조회");
         final LoginUserInformationDto loginUserInfo = findOrPersistUser(oauth2Type, userInformationDto);
-        log.info("디바이스 토큰 저장 로직");
-        updateOrPersistDeviceToken(deviceToken, loginUserInfo.user());
-        log.info("리프레시, 액세스 토큰 생성 로직");
+//        log.info("디바이스 토큰 저장 로직");
+//        updateOrPersistDeviceToken(deviceToken, loginUserInfo.user());
+        log.info("4. 리프레시, 액세스 토큰 생성");
         return LoginInformationDto.of(convertTokenDto(loginUserInfo), loginUserInfo);
     }
 
     private void updateOrPersistDeviceToken(final String deviceToken, final User persistUser) {
         final PersistDeviceTokenDto persistDeviceTokenDto = new PersistDeviceTokenDto(deviceToken);
-
         deviceTokenService.persist(persistUser.getId(), persistDeviceTokenDto);
     }
 
@@ -77,9 +77,7 @@ public class AuthenticationService {
         final User signInUser =  userRepository.findByOauthId(userInformationDto.findUserId())
                 .orElseGet(() -> {
                     final User user = User.builder()
-//                            .customId(oauth2Type.calculateNickname(
-//                                calculateRandomNumber())
-//                            )
+//                            .customId(oauth2Type.calculateNickname(calculateRandomNumber()))
                             .oauthId(userInformationDto.findUserId())
                             .oauth2Type(oauth2Type)
                             .build();
@@ -94,19 +92,18 @@ public class AuthenticationService {
         return new LoginUserInformationDto(signInUser, isSignUpUser.get());
     }
 
-//    private String calculateRandomNumber(){
-//        String id = RandomUserIdGenerator.generate();
-//
-//        while (isAlreadyExist(id)){
-//            id = RandomCustomIdGenerator.generate();
-//        }
-//
-//        return id;
-//    }
-//
-//    private boolean isAlreadyExist(final String id) {
-//        return userRepository.existsByCustomIdEndingWith(id);
-//    }
+    private String calculateRandomNumber(){
+        String id = RandomCustomIdGenerator.generate();
+
+        while (isAlreadyExist(id)){
+            id = RandomCustomIdGenerator.generate();
+        }
+        return id;
+    }
+
+    private boolean isAlreadyExist(final String id) {
+        return userRepository.existsByCustomIdEndingWith(id);
+    }
 
     private TokenDto convertTokenDto(final LoginUserInformationDto signInUserInfo) {
 

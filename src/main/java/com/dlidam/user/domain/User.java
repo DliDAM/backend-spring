@@ -45,11 +45,11 @@ public class User extends BaseTimeEntity {
 
     @Builder
     private User(
-//            final String customId,
+            final String customId,
             final String oauthId,
             final Oauth2Type oauth2Type
     ) {
-//        this.customId = customId;
+        this.customId = customId;
         this.oauthInformation = new OauthInformation(oauthId, oauth2Type);
     }
 

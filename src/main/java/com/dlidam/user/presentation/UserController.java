@@ -64,4 +64,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // todo: 개인 정보 수정 api
+    // todo: 내 프로필 수정하기 api
+
 }
