@@ -30,10 +30,13 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
     }
 
     @Override
-    public List<ChatRoomWithLastMessageDTO> findAllChatRoomByUserIdOrderByLastMessage(final Long userId) {
-        return jpaChatRoomRepository.findAllChatRoomByUserIdOrderByLastMessage(userId);
+    public List<ChatRoom> findAllChatRoomsByUserId(final Long userId) {
+        return jpaChatRoomRepository.findAllChatRoomsByUserId(userId);
     }
 
-//    @Override
-//    public List<ChatRoom> findAllByUser(User user){return jpaChatRoomRepository.findAllByUser(user);}
+    @Override
+    public void deleteById(Long chatRoomId) {
+        jpaChatRoomRepository.deleteById(chatRoomId);
+    }
+
 }

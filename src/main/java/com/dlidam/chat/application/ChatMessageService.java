@@ -1,15 +1,18 @@
 package com.dlidam.chat.application;
 
 
+import com.dlidam.chat.application.exception.ChatRoomNotFoundException;
 import com.dlidam.chat.domain.ChatMessage;
 import com.dlidam.chat.domain.ChatRoom;
 import com.dlidam.chat.domain.repository.ChatMessageRepository;
+import com.dlidam.chat.domain.repository.ChatRoomRepository;
 import com.dlidam.chat.dto.request.ChatMessageRequestDTO;
 import com.dlidam.chat.dto.response.ChatMessageDTO;
 import com.dlidam.chat.dto.response.ChatRoomWithLastMessageResponseDTO;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
@@ -17,12 +20,17 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Slf4j
 public class ChatMessageService {
-    public final ChatRoomService chatRoomService;
-    public final ChatMessageRepository chatMessageRepository;
 
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
+
+    @Transactional
     public ChatMessage save(final ChatMessageRequestDTO request, final String senderName) {
-          final ChatRoom chatRoom = chatRoomService.findById(request.getChatRoomId());
+          final ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
+                  .orElseThrow(() -> new ChatRoomNotFoundException("요청하는 ID에 해당하는 채팅방을 찾을 수 없습니다."));
 
           final ChatMessage newChatMessage = new ChatMessage(
                   request.getSenderId(),

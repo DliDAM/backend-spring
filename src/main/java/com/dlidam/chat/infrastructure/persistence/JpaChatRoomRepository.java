@@ -18,17 +18,10 @@ public interface JpaChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     Optional<ChatRoom> findBySenderAndReceiver(final User sender, final User receiver);
 
-    @Query("SELECT new com.dlidam.chat.domain.dto.ChatRoomWithLastMessageDTO( " +
-            "c, " +
-            "cm " +
-            ") " +
-            "FROM ChatRoom c " +
-            "LEFT JOIN c.chatMessage cm " +
-            "ON cm.id = (SELECT MAX(cm2.id) FROM ChatMessage cm2 WHERE cm2.chatRoom.id = c.id) " +
-            "JOIN User u " +
-            "ON (c.sender.id = u.id OR c.receiver.id = u.id) " +
-            "WHERE u.id = :userId " +
-            "ORDER BY cm.createdTime DESC")
-    List<ChatRoomWithLastMessageDTO> findAllChatRoomByUserIdOrderByLastMessage(@Param("userId") final Long userId);
-
+    @Query(
+            "SELECT cr FROM ChatRoom cr " +
+            "WHERE (cr.sender.id = :userId AND cr.senderConnect = true) " +
+            "OR (cr.receiver.id = :userId AND cr.receiverConnect = true)"
+    )
+    List<ChatRoom> findAllChatRoomsByUserId(@Param("userId") Long userId);
 }

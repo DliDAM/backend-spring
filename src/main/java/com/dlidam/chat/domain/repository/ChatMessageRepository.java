@@ -11,4 +11,6 @@ public interface ChatMessageRepository {
     ChatMessage save(ChatMessage chatMessage);
 
     Optional<List<ChatMessage>> findAllByChatRoom(final ChatRoom chatRoom);
+
+    ChatMessage findLastMessageInChatRoom(final Long chatRoomId);
 }

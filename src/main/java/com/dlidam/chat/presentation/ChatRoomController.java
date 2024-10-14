@@ -26,9 +26,6 @@ import java.util.List;
 @Slf4j
 public class ChatRoomController {
 
-    @Value("${socket.io.host}")
-    private String host;
-
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
     private final UserService userService;
@@ -62,7 +59,7 @@ public class ChatRoomController {
     }
 
     @GetMapping
-    @Operation(summary = "사용자 채팅방 목록 조회 API")
+    @Operation(summary = "사용자 채팅방 목록 조회")
     public ResponseEntity<List<ChatRoomWithLastMessageResponseDTO>> getChatRooms(
             @AuthenticateUser final AuthenticationUserInfo userInfo
     ){
@@ -73,7 +70,7 @@ public class ChatRoomController {
     }
 
     @GetMapping("/{chatRoomId}")
-    @Operation(summary = "사용자 채팅방 채팅 내역 조회 API")
+    @Operation(summary = "채팅방 채팅 내역 조회")
     public ResponseEntity<ChatRoomResponseDTO> getChatMessages(
             @AuthenticateUser final AuthenticationUserInfo userInfo,
             @PathVariable("chatRoomId") final Long chatRoomId
@@ -84,12 +81,16 @@ public class ChatRoomController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/socketIo")
-    @Operation(summary = "socektIO IP갖고 오기")
-    public ResponseEntity<?> getChatMessages(
+    @DeleteMapping("/{chatRoomId}")
+    @Operation(summary = "채팅방 나가기")
+    public ResponseEntity<Void> exitChatRoom(
+            @AuthenticateUser final AuthenticationUserInfo userInfo,
+            @PathVariable("chatRoomId") final Long chatRoomId
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(host);
+//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
+        log.info("userId = {}의 채팅방의 채팅방 나가기 요청이 들어왔습니다.", userInfo.userId());
+        chatRoomService.exitChatRoom(userInfo.userId(), chatRoomId);
+        return ResponseEntity.noContent().build();
     }
-
 
 }

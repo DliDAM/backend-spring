@@ -6,10 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 @CreateUserRequestValid
-public record CreateUserRequest(
-
-        @NotEmpty(message = "사용자 아이디가 입력되지 않았습니다.")
-        String customId,
+public record UpdateUserRequest(
 
         @NotEmpty(message = "사용자 이름이 입력되지 않았습니다.")
         String name,

@@ -66,4 +66,11 @@ public class User extends BaseTimeEntity {
         this.voiceType = voiceType;
     }
 
+    public void updateProfile(
+            final String name,
+            final String statusMessage
+    ) {
+        this.name = name;
+        this.statusMessage = statusMessage;
+    }
 }

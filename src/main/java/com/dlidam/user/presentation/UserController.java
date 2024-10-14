@@ -2,13 +2,11 @@ package com.dlidam.user.presentation;
 
 import com.dlidam.authentication.configuration.AuthenticateUser;
 import com.dlidam.authentication.domain.dto.AuthenticationUserInfo;
-import com.dlidam.user.application.dto.CreateUserDto;
-import com.dlidam.user.application.dto.CustomIdDto;
-import com.dlidam.user.application.dto.CustomIdIsAvailableDto;
-import com.dlidam.user.application.dto.UserInfoDto;
+import com.dlidam.user.application.dto.*;
 import com.dlidam.user.presentation.dto.request.CreateUserRequest;
 import com.dlidam.user.application.UserService;
 import com.dlidam.user.presentation.dto.request.CustomIdRequest;
+import com.dlidam.user.presentation.dto.request.UpdateProfileRequest;
 import com.dlidam.user.presentation.dto.response.CustomIdIsAvailableResponse;
 import com.dlidam.user.presentation.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +26,7 @@ public class UserController {
 
     @Operation(summary = "회원 정보 추가 기입")
     @PostMapping("/my-info")
-    public ResponseEntity<Void> create(
+    public ResponseEntity<Void> createInfo(
             @AuthenticateUser final AuthenticationUserInfo userInfo,
             @RequestBody @Valid final CreateUserRequest createRequest
     ){
@@ -50,6 +48,18 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
+    @Operation(summary = "회원 프로필 수정")
+    @PostMapping("/profile")
+    public ResponseEntity<Void> updateProfile(
+            @AuthenticateUser final AuthenticationUserInfo userInfo,
+            @RequestBody @Valid final UpdateProfileRequest updateProfileRequest
+    ){
+//        AuthenticationUserInfo userInfo = new AuthenticationUserInfo(1L);
+        log.info("userId = {}의 내 프로필 수정 요청이 들어왔습니다.", userInfo.userId());
+        userService.updateProfile(UpdateProfileDto.of(userInfo.userId(), updateProfileRequest));
+        return ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "사용자 아이디 중복 여부")
     @PostMapping("/validate")
     public ResponseEntity<CustomIdIsAvailableResponse> validateByCustomId(
@@ -60,11 +70,7 @@ public class UserController {
         log.info("userId = {}의 사용자 아이디 중복 조회 요청이 들어왔습니다.", userInfo.userId());
         final CustomIdIsAvailableDto customIdIsAvailableDto = userService.validateByCustomId(CustomIdDto.of(customIdRequest));
         final CustomIdIsAvailableResponse response = CustomIdIsAvailableResponse.from(customIdIsAvailableDto);
-
         return ResponseEntity.ok(response);
     }
-
-    // todo: 개인 정보 수정 api
-    // todo: 내 프로필 수정하기 api
 
 }
