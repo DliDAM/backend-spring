@@ -26,11 +26,9 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
@@ -134,7 +132,6 @@ public class WebSocketProxy {
     private DataListener<String> textMessageListener() {
         return (client, messagePayload, ackSender) -> {
             try {
-
                 ObjectMapper objectMapper = new ObjectMapper();
                 ChatMessageRequestDTO chatMessageRequestDTO = objectMapper.readValue(messagePayload, ChatMessageRequestDTO.class);
 
@@ -145,28 +142,46 @@ public class WebSocketProxy {
                     namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                             .sendEvent("messageData", chatMessageRequestDTO);
                 }
-                else {      // 청각 장애인 사용자
+                else {
                     if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
                         String jsonPayload = objectMapper.writeValueAsString(chatMessageRequestDTO);
-                        // FastAPI 서버에 문자열 메시지 전송
+
+                        log.info("[WebRTCProxy]-[FastAPI] send String Message to FastAPI");
                         fastAPIWebSocket.send(jsonPayload);
-                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
+
+                        log.info("[WebRTCProxy]-[FastAPI] wait for Audio Data from FastAPI");
+                        ByteArrayOutputStream audioDataBuffer = new ByteArrayOutputStream();
+
                         fastAPIWebSocket.onMessageCallback = audioData -> {
-                            // 클라이언트로 오디오 데이터 전송
-                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
-                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
+                            log.info("[WebRTCProxy]-[FastAPI] creating Audio Data");
+                            byte[] completeAudioData = audioDataBuffer.toByteArray();
+                            audioDataBuffer.write((byte[]) audioData);
 
-//                            log.info("audioData = {}", audioData);
-//
-//                            log.info("output.raw 파일로 저장");
-//                            String rawFilePath = "output.raw";
-//                            saveAudioToFile(rawFilePath, audioData);
-//
-//                            log.info("output.raw를 output.wav로 변환");
-//                            String wavFilePath = "output.wav";
-//                            convertRawToWav(rawFilePath, wavFilePath, 22050, 1, 2);
+                            log.info("completedAudoioData = {}", completeAudioData);
+                            try {
+                                byte[] wavData = convertToWav(completeAudioData);
+                                log.info("wavData = {}", wavData);
 
-                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
+                                // WAV 파일 저장
+//                                String fileName = "output_" + System.currentTimeMillis() + ".wav";
+                                String fileName = "output.wav";
+                                try (FileOutputStream fos = new FileOutputStream(fileName)) {
+                                    fos.write(wavData);
+                                }
+
+                                log.info("[WebRTCProxy]-[FastAPI] Saved WAV file: {}", fileName);
+
+                                // 클라이언트로 WAV 파일 데이터 전송
+                                namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
+                                        .sendEvent("audioData", Base64.getEncoder().encodeToString(wavData));
+
+                                log.info("[WebRTCProxy]-[Socketio] Sent WAV audio data to client: {}", client.getSessionId().toString());
+                            } catch (Exception e) {
+                                log.error("[WebRTCProxy]-[FastAPI] Error converting to WAV: ", e);
+                            }
+
+                            // 버퍼 초기화
+                            audioDataBuffer.reset();
                         };
                     } else {
                         log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
@@ -178,31 +193,16 @@ public class WebSocketProxy {
         };
     }
 
-    private void saveAudioToFile(String outputFile, byte[] audioData) {
-        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-            fos.write(audioData);
-            log.info("Audio saved to {}", outputFile);
-        } catch (IOException e) {
-            log.error("Error saving audio to file: {}", e.getMessage());
-        }
-    }
+    private byte[] convertToWav(byte[] rawData) throws Exception {
+        ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    private void convertRawToWav(String inputFile, String outputFile, float sampleRate, int channels, int sampleWidth) {
-        try {
-            // Create a new AudioInputStream
-            AudioFormat format = new AudioFormat(sampleRate, sampleWidth * 8, channels, true, false);
-            byte[] rawData = Files.readAllBytes(Paths.get(inputFile));
+        AudioFormat format = new AudioFormat(24000, 16, 1, true, false);
 
-            try (AudioInputStream audioInputStream = new AudioInputStream(
-                    new ByteArrayInputStream(rawData), format, rawData.length / (sampleWidth * channels))) {
+        AudioInputStream ais = new AudioInputStream(bais, format, rawData.length / format.getFrameSize());
+        AudioSystem.write(ais, AudioFileFormat.Type.WAVE, baos);
 
-                // Write to the WAV file
-                AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, new File(outputFile));
-                log.info("Converted {} to {}", inputFile, outputFile);
-            }
-        } catch (Exception e) {
-            log.error("Error converting {} to {}: {}", inputFile, outputFile, e.getMessage());
-        }
+        return baos.toByteArray();
     }
 
 }
