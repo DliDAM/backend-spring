@@ -1,4 +1,4 @@
-package com.dlidam.chat.infrastructure.webrtc;
+package com.dlidam.chat.infrastructure.websocket;
 
 import com.corundumstudio.socketio.HandshakeData;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -21,12 +21,19 @@ import org.java_websocket.drafts.Draft_6455;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import java.io.*;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Slf4j
 @Component
@@ -125,7 +132,6 @@ public class WebSocketProxy {
     private DataListener<String> textMessageListener() {
         return (client, messagePayload, ackSender) -> {
             try {
-
                 ObjectMapper objectMapper = new ObjectMapper();
                 ChatMessageRequestDTO chatMessageRequestDTO = objectMapper.readValue(messagePayload, ChatMessageRequestDTO.class);
 
@@ -136,19 +142,46 @@ public class WebSocketProxy {
                     namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
                             .sendEvent("messageData", chatMessageRequestDTO);
                 }
-                else {      // 청각 장애인 사용자
+                else {
                     if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
-                        // FastAPI 서버에 문자열 메시지 전송
-                        fastAPIWebSocket.send(chatMessageRequestDTO.getMessage());
-                        // FastAPI 서버로부터 응답 대기 및 오디오 데이터 수신
+                        String jsonPayload = objectMapper.writeValueAsString(chatMessageRequestDTO);
+
+                        log.info("[WebRTCProxy]-[FastAPI] send String Message to FastAPI");
+                        fastAPIWebSocket.send(jsonPayload);
+
+                        log.info("[WebRTCProxy]-[FastAPI] wait for Audio Data from FastAPI");
+                        ByteArrayOutputStream audioDataBuffer = new ByteArrayOutputStream();
+
                         fastAPIWebSocket.onMessageCallback = audioData -> {
-                            // 클라이언트로 오디오 데이터 전송
-                            namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
-                                    .sendEvent("audioData", Base64.getEncoder().encodeToString(audioData));
+                            log.info("[WebRTCProxy]-[FastAPI] creating Audio Data");
+                            byte[] completeAudioData = audioDataBuffer.toByteArray();
+                            audioDataBuffer.write((byte[]) audioData);
 
-                            log.info("audioData = {}", audioData);
+                            log.info("completedAudoioData = {}", completeAudioData);
+                            try {
+                                byte[] wavData = convertToWav(completeAudioData);
+                                log.info("wavData = {}", wavData);
 
-                            log.info("[WebRTCProxy]-[Socketio] Sent audio data to client: {}", client.getSessionId().toString());
+                                // WAV 파일 저장
+//                                String fileName = "output_" + System.currentTimeMillis() + ".wav";
+                                String fileName = "output.wav";
+                                try (FileOutputStream fos = new FileOutputStream(fileName)) {
+                                    fos.write(wavData);
+                                }
+
+                                log.info("[WebRTCProxy]-[FastAPI] Saved WAV file: {}", fileName);
+
+                                // 클라이언트로 WAV 파일 데이터 전송
+                                namespace.getRoomOperations(chatMessageRequestDTO.getChatRoomId().toString())
+                                        .sendEvent("audioData", Base64.getEncoder().encodeToString(wavData));
+
+                                log.info("[WebRTCProxy]-[Socketio] Sent WAV audio data to client: {}", client.getSessionId().toString());
+                            } catch (Exception e) {
+                                log.error("[WebRTCProxy]-[FastAPI] Error converting to WAV: ", e);
+                            }
+
+                            // 버퍼 초기화
+                            audioDataBuffer.reset();
                         };
                     } else {
                         log.error("[WebRTCProxy]-[Socketio] FastAPI WebSocket is not connected");
@@ -159,4 +192,17 @@ public class WebSocketProxy {
             }
         };
     }
+
+    private byte[] convertToWav(byte[] rawData) throws Exception {
+        ByteArrayInputStream bais = new ByteArrayInputStream(rawData);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        AudioFormat format = new AudioFormat(24000, 16, 1, true, false);
+
+        AudioInputStream ais = new AudioInputStream(bais, format, rawData.length / format.getFrameSize());
+        AudioSystem.write(ais, AudioFileFormat.Type.WAVE, baos);
+
+        return baos.toByteArray();
+    }
+
 }

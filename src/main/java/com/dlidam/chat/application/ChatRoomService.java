@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +44,8 @@ public class ChatRoomService {
         final ChatRoom chatRoom = chatRoomRepository.findBySenderAndReceiver(sender, receiver)
                 .orElseGet(() ->{
                     final ChatRoom newChatRoom = new ChatRoom(sender, receiver);
-                    newChatRoom.setSenderConnectTrue();
-
+                    newChatRoom.updateSenderConnectStatus(true);
+                    newChatRoom.updateReceiverConnectStatus(true);
                     return chatRoomRepository.save(newChatRoom);
                 });
 
@@ -73,8 +74,6 @@ public class ChatRoomService {
         final ChatRoom chatRoom = chatRoomRepository.findBySenderAndReceiver(sender, receiver)
                 .orElseThrow(() -> new ChatRoomNotFoundException("요청하는 채팅방을 찾을 수 없습니다."));
 
-        chatRoom.setReceiverConnectTrue();
-
         return chatRoomRepository.save(chatRoom);
     }
 
@@ -88,48 +87,29 @@ public class ChatRoomService {
     }
 
     public List<ChatRoomWithLastMessageResponseDTO> getAllChatRooms(final Long userId) {
-
-        log.info("===1===");
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
 
-        log.info("===2===");
-        final List<ChatRoomWithLastMessageDTO> chatRoomWithLastMessageDTOS =
-                chatRoomRepository.findAllChatRoomByUserIdOrderByLastMessage(user.getId());
+        final List<ChatRoom> chatRooms = chatRoomRepository.findAllChatRoomsByUserId(user.getId());
 
-        for(ChatRoomWithLastMessageDTO dto : chatRoomWithLastMessageDTOS) {
-            log.info("chatRoomId ={}, lastMessage = {}", dto.getChatRoom(), dto.getChatMessage());
-        }
+        final List<ChatRoomWithLastMessageDTO> chatRoomWithLastMessageDTOS = chatRooms.stream()
+                .map(chatRoom -> ChatRoomWithLastMessageDTO.of(
+                        chatRoom, chatMessageRepository.findLastMessageInChatRoom(chatRoom.getId())
+                ))
+                .collect(Collectors.toList());
 
-        log.info("===3===");
         return chatRoomWithLastMessageDTOS.stream()
                 .map(dto -> ChatRoomWithLastMessageResponseDTO.of(user, dto))
                 .toList();
     }
 
-//    @Transactional
-//    public void setLastChatMessage(List<ChatRoom> chatRoomList) {
-//
-//        for (ChatRoom chatRoom : chatRoomList) {
-//            List<ChatMessage> chatMessageList = chatRoom.getChatMessage();
-//            if (!chatMessageList.isEmpty()) {
-//                ChatMessage lastChatMessage = chatMessageList.get(chatMessageList.size() - 1);
-//                chatRoom.setLastChatMessage(lastChatMessage.getMessage());
-//            }
-//        }
-//    }
-
-    public ChatRoom findById(final Long chatRoomId) {
-        return chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new ChatRoomNotFoundException("요청하는 ID에 해당하는 채팅방을 찾을 수 없습니다."));
-    }
-
     public ChatRoomResponseDTO getChatMessages(final Long chatRoomId, final Long userId) {
-
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
 
-        ChatRoom chatRoom = findById(chatRoomId);
+        final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new ChatRoomNotFoundException("요청하는 ID에 해당하는 채팅방을 찾을 수 없습니다."));
+
         if (chatRoom.getSender().equals(user)){
             return getSenderMessages(chatRoom);
         } else if (chatRoom.getReceiver().equals(user)) {
@@ -137,4 +117,26 @@ public class ChatRoomService {
         }
         throw new ChatRoomNotFoundException("해당 채팅방의 내역을 불러올 수 없습니다.");
     }
+
+    @Transactional
+    public void exitChatRoom(final Long userId, final Long chatRoomId) {
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("요청하는 ID에 대한 사용자를 찾을 수 없습니다."));
+
+        final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new ChatRoomNotFoundException("요청하는 ID에 해당하는 채팅방을 찾을 수 없습니다."));
+
+        log.info("chatRoom Sender Status = {}", chatRoom.getSenderConnect());
+        if(chatRoom.getSender().equals(user)) {
+            chatRoom.updateSenderConnectStatus(false);
+        } else {
+            chatRoom.updateReceiverConnectStatus(false);
+        }
+
+        log.info("chatRoom Sender Status = {}", chatRoom.getSenderConnect());
+        if(!chatRoom.getSenderConnect() && !chatRoom.getReceiverConnect()) {
+            chatRoomRepository.deleteById(chatRoomId);
+        }
+    }
+
 }

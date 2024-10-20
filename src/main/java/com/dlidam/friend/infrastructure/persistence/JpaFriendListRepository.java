@@ -13,4 +13,6 @@ public interface JpaFriendListRepository extends JpaRepository<FriendList, Long>
     List<FriendList> findAllByUser(final User user);
 
     void deleteByUserIdAndFriendId(final Long userId, final String customId);
+
+    FriendList findByUserIdAndFriendId(final Long userId, final String customId);
 }

@@ -41,4 +41,6 @@ public class FriendList extends BaseCreateTimeEntity {
         this.friendType = FRIEND;
     }
 
+    public void updateFriendStatus(final FriendType friendType) { this.friendType = friendType; }
+
 }

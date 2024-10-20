@@ -49,32 +49,4 @@ public class ChatRoomWithLastMessageResponseDTO {
                 );
         }
 
-//        public static ChatRoomWithLastMessageResponseDTO toChatRoomSimpleDTO(ChatRoom chatRoom){
-//                LocalDateTime time = null;
-//                List<ChatMessage> chatMessageList = chatRoom.getChatMessage();
-//                if(!chatMessageList.isEmpty()){
-//                        ChatMessage lastChatMessage = chatMessageList.get(chatMessageList.size() - 1);
-//                        time = lastChatMessage.getCreatedTime();}
-//
-//                return ChatRoomWithLastMessageResponseDTO.builder()
-//                        .chatRoomId(chatRoom.getId())
-//                        .userId(chatRoom.getSender().getId())
-//                        .userName(chatRoom.getSender().getName())
-//                        .partnerName(chatRoom.getReceiver().getName())
-//                        .chatMessageDTOList(ChatMessageDTO.toChatMessageListDTO(chatRoom.getChatMessage()))
-//                        .lastChatMessage(chatRoom.getLastChatMessage())
-//                        .lastChatTime(time)
-//                        .pictureUrl(chatRoom.getReceiver().getPictureURL())
-//                        .build();
-//        }
-//
-//        public static List<ChatRoomWithLastMessageResponseDTO> toChatRoomSimpleListDTO(List<ChatRoom> chatRoomList){
-//                return chatRoomList.stream()
-//                        .map(chatRoom -> toChatRoomSimpleDTO(chatRoom))
-//                        .collect(Collectors.toList());
-//        }
-//
-//        public void setChatMessageDTOList(List<ChatMessageDTO> sortedMessages){
-//                this.chatMessageDTOList = sortedMessages ;}
-
 }

@@ -15,7 +15,7 @@ public interface ChatRoomRepository {
 
     Optional<ChatRoom> findBySenderAndReceiver(final User sender, final User receiver);
 
-    List<ChatRoomWithLastMessageDTO> findAllChatRoomByUserIdOrderByLastMessage(final Long userId);
+    List<ChatRoom> findAllChatRoomsByUserId(final Long id);
 
-    // List<ChatRoom> findAllByUser(User user);
+    void deleteById(final Long chatRoomId);
 }

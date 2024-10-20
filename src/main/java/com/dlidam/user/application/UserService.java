@@ -1,9 +1,6 @@
 package com.dlidam.user.application;
 
-import com.dlidam.user.application.dto.CreateUserDto;
-import com.dlidam.user.application.dto.CustomIdDto;
-import com.dlidam.user.application.dto.CustomIdIsAvailableDto;
-import com.dlidam.user.application.dto.UserInfoDto;
+import com.dlidam.user.application.dto.*;
 import com.dlidam.user.application.exception.UserNotFoundException;
 import com.dlidam.user.domain.User;
 import com.dlidam.user.domain.repository.UserRepository;
@@ -32,9 +29,16 @@ public class UserService {
                 createUserDto.isDisabled(),
                 createUserDto.voiceType()
                 );
-
         userRepository.save(user);
+    }
 
+    @Transactional
+    public void updateProfile(final UpdateProfileDto updateProfileDto) {
+        final User user = userRepository.findById(updateProfileDto.userId())
+                .orElseThrow(() -> new UserNotFoundException("사용자 정보를 찾을 수 없습니다."));
+
+        user.updateProfile(updateProfileDto.name(), updateProfileDto.statusMessage());
+        userRepository.save(user);
     }
 
     public UserInfoDto getMyInfo(final Long userId) {
@@ -52,6 +56,7 @@ public class UserService {
         return userRepository.findByCustomId(senderId)
                 .orElseThrow(() -> new UserNotFoundException("사용자 정보를 찾을 수 없습니다."));
     }
+
 
 
 }

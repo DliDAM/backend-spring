@@ -45,11 +45,11 @@ public class User extends BaseTimeEntity {
 
     @Builder
     private User(
-//            final String customId,
+            final String customId,
             final String oauthId,
             final Oauth2Type oauth2Type
     ) {
-//        this.customId = customId;
+        this.customId = customId;
         this.oauthInformation = new OauthInformation(oauthId, oauth2Type);
     }
 
@@ -66,4 +66,11 @@ public class User extends BaseTimeEntity {
         this.voiceType = voiceType;
     }
 
+    public void updateProfile(
+            final String name,
+            final String statusMessage
+    ) {
+        this.name = name;
+        this.statusMessage = statusMessage;
+    }
 }

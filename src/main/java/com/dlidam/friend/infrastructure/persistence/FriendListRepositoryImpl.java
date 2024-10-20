@@ -33,4 +33,9 @@ public class FriendListRepositoryImpl implements FriendListRepository {
     public List<FriendList> findAllByUser(final User user) {
         return jpaFriendListRepository.findAllByUser(user);
     }
+
+    @Override
+    public FriendList findByUserIdAndFriendId(final Long userId, String customId) {
+        return jpaFriendListRepository.findByUserIdAndFriendId(userId, customId);
+    }
 }
