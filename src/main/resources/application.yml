@@ -48,6 +48,7 @@ socket:
     port: 9092
     host: 0.0.0.0
   fast-api-endpoint: ${fast-api-endpoint}
+
 ---
 
 spring:
