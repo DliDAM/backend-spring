@@ -6,7 +6,7 @@
 ## 서비스 화면
 
 ## 기술 스택 - Backend
-![image](https://github.com/user-attachments/assets/1191b901-f4d7-44ce-b5ee-ac13eb68ba6f)
+![image](https://github.com/user-attachments/assets/0acfe31e-63ce-499c-92ba-3534ea3ab1da)
 
 ## 아키텍처 구조 - Backend
 ![image](https://github.com/user-attachments/assets/d0465aca-5d62-43b9-8614-c33ef8964617)
