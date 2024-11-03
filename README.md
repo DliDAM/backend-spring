@@ -3,7 +3,12 @@
 </br>
 </br>
 
-## 기술 스택
-![image](https://github.com/user-attachments/assets/41a35f44-1b2c-4896-b5a5-3838f327d807)
+## 서비스 화면
 
-## 아키텍처 구조
+## 기술 스택 - Backend
+![image](https://github.com/user-attachments/assets/1191b901-f4d7-44ce-b5ee-ac13eb68ba6f)
+
+## 아키텍처 구조 - Backend
+![image](https://github.com/user-attachments/assets/d0465aca-5d62-43b9-8614-c33ef8964617)
+
+## 실시간 음성 통신
