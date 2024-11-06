@@ -3,6 +3,9 @@ package com.dlidam.user.domain;
 public enum VoiceType {
     MALE,
     FEMALE,
-    CHARACTER,
+    ROSE,
+    GD,
+    BRUNO,
+    GRANDE,
     MINE;
 }

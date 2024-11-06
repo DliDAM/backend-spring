@@ -7,6 +7,7 @@ import com.dlidam.user.domain.VoiceType;
 public record UserResponse(
         String customId,
         String name,
+        String statusMessage,
         String phoneNumber,
         boolean isDisabled,
         VoiceType voiceType
@@ -16,6 +17,7 @@ public record UserResponse(
                 userInfoDto.customId(),
                 userInfoDto.name(),
                 userInfoDto.phoneNumber(),
+                userInfoDto.statusMessage(),
                 userInfoDto.isDisabled(),
                 userInfoDto.voiceType());
     }

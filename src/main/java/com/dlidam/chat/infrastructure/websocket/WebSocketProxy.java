@@ -8,6 +8,7 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.dlidam.chat.application.ChatMessageService;
+import com.dlidam.chat.dto.request.AudioMessageRequestDTO;
 import com.dlidam.chat.dto.request.ChatMessageRequestDTO;
 import com.dlidam.configuration.audio.AudioConverter;
 import com.dlidam.configuration.websocket.ConfigUtil;
@@ -133,7 +134,8 @@ public class WebSocketProxy {
                 }
                 else {      // 장애인 사용자
                     if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
-                        String jsonPayload = objectMapper.writeValueAsString(chatMessageRequestDTO);
+                        AudioMessageRequestDTO audioMessageRequestDTO = AudioMessageRequestDTO.from(chatMessageRequestDTO, sender);
+                        String jsonPayload = objectMapper.writeValueAsString(audioMessageRequestDTO);
                         fastAPIWebSocket.send(jsonPayload);
 
                         ByteArrayOutputStream audioDataBuffer = new ByteArrayOutputStream();
