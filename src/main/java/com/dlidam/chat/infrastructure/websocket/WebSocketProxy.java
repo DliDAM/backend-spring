@@ -148,12 +148,12 @@ public class WebSocketProxy {
                                 // 새로운 AudioConverter 사용
                                 byte[] wavData = audioConverter.convertToWav(completeAudioData);
 
-                                // 파일 저장
-                                String fileName = "output.wav";
-                                try (FileOutputStream fos = new FileOutputStream(fileName)) {
-                                    fos.write(wavData);
-                                }
-                                log.info("[WebSocketProxy]-[FastAPI] Saved WAV file: {}", fileName);
+//                                // 파일 저장
+//                                String fileName = "output.wav";
+//                                try (FileOutputStream fos = new FileOutputStream(fileName)) {
+//                                    fos.write(wavData);
+//                                }
+//                                log.info("[WebSocketProxy]-[FastAPI] Saved WAV file: {}", fileName);
 
                                 // 클라이언트로 전송
                                 String base64Audio = Base64.getEncoder().encodeToString(wavData);
