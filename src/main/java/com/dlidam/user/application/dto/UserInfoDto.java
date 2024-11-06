@@ -7,6 +7,7 @@ import com.google.firebase.auth.UserInfo;
 public record UserInfoDto(
         String customId,
         String name,
+        String statusMessage,
         String phoneNumber,
         boolean isDisabled,
         VoiceType voiceType
@@ -15,6 +16,7 @@ public record UserInfoDto(
         return new UserInfoDto(
                 user.getCustomId(),
                 user.getName(),
+                user.getStatusMessage(),
                 user.getPhoneNumber(),
                 user.isDisabled(),
                 user.getVoiceType());

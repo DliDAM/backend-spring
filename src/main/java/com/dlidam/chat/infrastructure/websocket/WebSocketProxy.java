@@ -8,6 +8,7 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.dlidam.chat.application.ChatMessageService;
+import com.dlidam.chat.dto.request.AudioMessageRequestDTO;
 import com.dlidam.chat.dto.request.ChatMessageRequestDTO;
 import com.dlidam.configuration.audio.AudioConverter;
 import com.dlidam.configuration.websocket.ConfigUtil;
@@ -133,7 +134,8 @@ public class WebSocketProxy {
                 }
                 else {      // 장애인 사용자
                     if (fastAPIWebSocket != null && fastAPIWebSocket.isOpen()) {
-                        String jsonPayload = objectMapper.writeValueAsString(chatMessageRequestDTO);
+                        AudioMessageRequestDTO audioMessageRequestDTO = AudioMessageRequestDTO.from(chatMessageRequestDTO, sender);
+                        String jsonPayload = objectMapper.writeValueAsString(audioMessageRequestDTO);
                         fastAPIWebSocket.send(jsonPayload);
 
                         ByteArrayOutputStream audioDataBuffer = new ByteArrayOutputStream();
@@ -148,12 +150,12 @@ public class WebSocketProxy {
                                 // 새로운 AudioConverter 사용
                                 byte[] wavData = audioConverter.convertToWav(completeAudioData);
 
-                                // 파일 저장
-                                String fileName = "output.wav";
-                                try (FileOutputStream fos = new FileOutputStream(fileName)) {
-                                    fos.write(wavData);
-                                }
-                                log.info("[WebSocketProxy]-[FastAPI] Saved WAV file: {}", fileName);
+//                                // 파일 저장
+//                                String fileName = "output.wav";
+//                                try (FileOutputStream fos = new FileOutputStream(fileName)) {
+//                                    fos.write(wavData);
+//                                }
+//                                log.info("[WebSocketProxy]-[FastAPI] Saved WAV file: {}", fileName);
 
                                 // 클라이언트로 전송
                                 String base64Audio = Base64.getEncoder().encodeToString(wavData);
