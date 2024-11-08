@@ -20,7 +20,7 @@
 
 ## 아키텍처 구조 - Backend
 <div align="center">
-    <img src="https://github.com/user-attachments/assets/5a36e692-3071-4db6-8666-dfa221398be7" width="700" alt="이미지 설명">
+    <img src="https://github.com/user-attachments/assets/aa74ff9b-c3dc-462e-82dd-787a65199904" width="700" alt="이미지 설명">
 </div>
 
 ## 실시간 음성 통신
