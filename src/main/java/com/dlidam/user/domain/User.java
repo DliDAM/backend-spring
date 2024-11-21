@@ -31,7 +31,7 @@ public class User extends BaseTimeEntity {
 
     private String phoneNumber;
 
-    @Enumerated(value = STRING)
+    @Enumerated(value = EnumType.STRING)
     private VoiceType voiceType;
 
     @Column(length = 50)

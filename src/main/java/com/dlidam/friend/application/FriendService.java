@@ -10,6 +10,7 @@ import com.dlidam.friend.presentation.dto.request.FriendIdRequest;
 import com.dlidam.user.domain.User;
 import com.dlidam.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 import static com.dlidam.friend.domain.FriendType.*;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
